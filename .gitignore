@@ -1,0 +1,22 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Editors & OS
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
+
+# Python environments
+.venv/
+venv/
+env/
+
+# Odoo
+*.log
+filestore/
+sessions/

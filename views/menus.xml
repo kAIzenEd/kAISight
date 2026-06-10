@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_kai_view_root"
+        name="kaiSight"
+        web_icon="kaiSight,static/description/icon.svg"
+        sequence="45"
+        groups="kaiSight.group_kai_view_user"/>
+
+    <menuitem id="menu_kai_view_dashboard"
+        name="Dashboard"
+        parent="menu_kai_view_root"
+        action="action_kai_view_dashboard_client"
+        sequence="1"/>
+
+    <menuitem id="menu_kai_view_configuration"
+        name="Configuration"
+        parent="menu_kai_view_root"
+        sequence="90"
+        groups="kaiSight.group_kai_view_user"/>
+
+    <menuitem id="menu_kai_view_dashboards"
+        name="Dashboards"
+        parent="menu_kai_view_configuration"
+        action="action_kai_view_dashboards"
+        sequence="1"/>
+
+    <menuitem id="menu_kai_view_reports"
+        name="Saved reports"
+        parent="menu_kai_view_configuration"
+        action="action_kai_view_reports"
+        sequence="2"/>
+</odoo>

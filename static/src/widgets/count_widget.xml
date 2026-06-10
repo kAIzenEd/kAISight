@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="kaiSight.CountWidget">
+        <div class="kv-widget kv-widget--kpi" t-att-class="{ 'kv-widget--error': hasError }">
+            <div class="kv-widget__header">
+                <div class="kv-widget__title-wrap">
+                    <i t-att-class="'fa ' + (props.widget.icon || 'fa-chart-bar') + ' kv-widget__icon'"/>
+                    <div>
+                        <div class="kv-widget__title" t-esc="props.widget.name"/>
+                        <div class="kv-widget__subtitle" t-if="props.widget.subtitle" t-esc="props.widget.subtitle"/>
+                    </div>
+                </div>
+                <div class="kv-widget__actions">
+                    <button type="button" class="btn btn-link btn-sm p-0" title="Refresh" t-on-click="() => props.onRefresh?.(props.widget.id)">
+                        <i class="fa fa-refresh"/>
+                    </button>
+                </div>
+            </div>
+            <div class="kv-widget__body">
+                <t t-if="hasError">
+                    <p class="kv-widget__error text-danger mb-0" t-esc="props.widget.error"/>
+                </t>
+                <t t-else="">
+                    <div class="kv-kpi__value" t-esc="displayValue"/>
+                    <button type="button" class="btn btn-link btn-sm kv-kpi__link p-0" t-on-click="() => props.onOpen?.(props.widget)">
+                        View records
+                    </button>
+                </t>
+            </div>
+        </div>
+    </t>
+</templates>

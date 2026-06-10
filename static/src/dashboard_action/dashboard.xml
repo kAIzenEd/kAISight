@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="kaiSight.Dashboard">
+        <div class="o_kai_view_dashboard o_action o_view_controller kv-dashboard-root">
+            <div class="kv-dashboard">
+                <header class="kv-dashboard__toolbar">
+                    <div class="kv-dashboard__toolbar-left">
+                        <h1 class="kv-dashboard__brand mb-0">
+                            <i class="fa fa-line-chart me-2"/>kaiSight
+                        </h1>
+                        <select class="form-select form-select-sm kv-dashboard__select"
+                            t-att-value="state.selectedDashboardId"
+                            t-on-change="onDashboardChange">
+                            <t t-foreach="state.dashboards" t-as="dash" t-key="dash.id">
+                                <option t-att-value="dash.id" t-esc="dash.name"/>
+                            </t>
+                        </select>
+                        <button type="button" class="btn btn-secondary btn-sm" t-on-click="refreshDashboard" t-att-disabled="state.loading">
+                            <i class="fa fa-refresh"/> Refresh
+                        </button>
+                    </div>
+                    <div class="kv-dashboard__toolbar-right">
+                        <button type="button" class="btn btn-link btn-sm" t-on-click="openDashboardConfig">
+                            Configure dashboards
+                        </button>
+                        <button type="button" class="btn btn-link btn-sm" t-on-click="openReportsConfig">
+                            Manage saved reports
+                        </button>
+                    </div>
+                </header>
+
+                <div class="kv-dashboard__content row g-3">
+                    <section class="col-lg-9">
+                        <t t-if="state.loading">
+                            <div class="kv-dashboard__loading text-muted">
+                                <i class="fa fa-spinner fa-spin me-2"/>Loading dashboard…
+                            </div>
+                        </t>
+                        <t t-elif="state.error">
+                            <div class="alert alert-danger" t-esc="state.error"/>
+                        </t>
+                        <t t-elif="!state.dashboard">
+                            <div class="kv-dashboard__empty">
+                                <p class="text-muted mb-2">No dashboard available yet.</p>
+                                <button type="button" class="btn btn-primary btn-sm" t-on-click="openDashboardConfig">
+                                    Create a dashboard
+                                </button>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <div class="kv-dashboard__intro mb-3" t-if="state.dashboard.description">
+                                <p class="text-muted mb-0" t-esc="state.dashboard.description"/>
+                            </div>
+                            <t t-if="!(state.dashboard.widgets || []).length">
+                                <div class="kv-dashboard__empty">
+                                    <p class="text-muted mb-2">This dashboard has no widgets yet.</p>
+                                    <button type="button" class="btn btn-primary btn-sm" t-on-click="openDashboardConfig">
+                                        Add widgets
+                                    </button>
+                                </div>
+                            </t>
+                            <div class="kv-grid" t-else="">
+                                <t t-foreach="state.dashboard.widgets" t-as="widget" t-key="widget.id">
+                                    <div class="kv-grid__item" t-att-style="gridStyle(widget)">
+                                        <KaiSightCountWidget t-if="widget.type === 'kpi'"
+                                            widget="widget"
+                                            onRefresh.bind="refreshWidget"
+                                            onOpen.bind="openWidgetAction"/>
+                                        <KaiSightChartWidget t-elif="widget.type === 'chart'"
+                                            widget="widget"
+                                            onRefresh.bind="refreshWidget"/>
+                                        <KaiSightListWidget t-else=""
+                                            widget="widget"
+                                            onRefresh.bind="refreshWidget"
+                                            onOpenAll.bind="openWidgetAction"
+                                            onOpenRecord.bind="openListRecord"/>
+                                    </div>
+                                </t>
+                            </div>
+                        </t>
+                    </section>
+
+                    <aside class="col-lg-3">
+                        <div class="kv-sidebar card">
+                            <div class="card-header">
+                                <strong>Saved reports</strong>
+                            </div>
+                            <ul class="list-group list-group-flush kv-sidebar__list">
+                                <t t-if="!state.reports.length">
+                                    <li class="list-group-item text-muted small">No saved reports yet.</li>
+                                </t>
+                                <t t-foreach="state.reports" t-as="report" t-key="report.id">
+                                    <li class="list-group-item kv-sidebar__item">
+                                        <button type="button" class="btn btn-link text-start p-0 w-100" t-on-click="() => this.onReportClick(report)">
+                                            <i t-att-class="'fa me-2 ' + (report.is_favorite ? 'fa-star text-warning' : 'fa-file-text-o')"/>
+                                            <span t-esc="report.name"/>
+                                        </button>
+                                        <div class="small text-muted" t-esc="report.model"/>
+                                    </li>
+                                </t>
+                            </ul>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

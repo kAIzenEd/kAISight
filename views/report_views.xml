@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_kai_view_report_list" model="ir.ui.view">
+        <field name="name">kai.view.report.list</field>
+        <field name="model">kai.view.report</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="model_id"/>
+                <field name="user_id" widget="many2one_avatar_user"/>
+                <field name="is_favorite"/>
+                <field name="is_shared"/>
+                <field name="active" column_invisible="True"/>
+                <button name="action_open_report" type="object" string="Open" icon="fa-external-link"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_kai_view_report_form" model="ir.ui.view">
+        <field name="name">kai.view.report.form</field>
+        <field name="model">kai.view.report</field>
+        <field name="arch" type="xml">
+            <form string="Saved report">
+                <header>
+                    <button name="action_open_report" type="object" string="Run report" class="btn-primary"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="model_id"/>
+                            <field name="view_mode"/>
+                            <field name="user_id" groups="kaiSight.group_kai_view_manager"/>
+                        </group>
+                        <group>
+                            <field name="is_shared"/>
+                            <field name="is_favorite"/>
+                            <field name="active"/>
+                            <field name="sequence"/>
+                        </group>
+                    </group>
+                    <field name="description"/>
+                    <field name="model_name" invisible="1"/>
+                    <field name="res_model_name" invisible="1"/>
+                    <notebook>
+                        <page string="Data" name="data">
+                            <group>
+                                <p class="text-muted" colspan="2">
+                                    Select a model first. Filters must use fields from that model only.
+                                </p>
+                                <field name="domain" widget="domain" options="{'model': 'res_model_name', 'in_dialog': True}" readonly="not model_id"/>
+                            </group>
+                            <group string="Columns" invisible="not model_id">
+                                <field name="field_ids" widget="many2many_tags" options="{'no_create': True}" nolabel="1" colspan="2"/>
+                            </group>
+                            <p class="text-muted" invisible="not model_id">
+                                Choose which fields appear in the list view. Leave empty to use the model’s default list view.
+                            </p>
+                        </page>
+                        <page string="Advanced" name="advanced">
+                            <group>
+                                <field name="context" widget="text" placeholder="{'search_default_my': 1}"/>
+                            </group>
+                            <field name="list_view_id" groups="base.group_no_one"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_kai_view_reports" model="ir.actions.act_window">
+        <field name="name">Saved reports</field>
+        <field name="res_model">kai.view.report</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Save a report shortcut
+            </p>
+            <p>
+                Store a model, filter, and columns — then open it in one click from kaiSight or the Reports menu.
+            </p>
+        </field>
+    </record>
+</odoo>

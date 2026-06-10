@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="kaiSight.ChartWidget">
+        <div class="kv-widget kv-widget--chart" t-att-class="{ 'kv-widget--error': hasError }">
+            <div class="kv-widget__header">
+                <div class="kv-widget__title" t-esc="props.widget.name"/>
+                <button type="button" class="btn btn-link btn-sm p-0" title="Refresh" t-on-click="() => props.onRefresh?.(props.widget.id)">
+                    <i class="fa fa-refresh"/>
+                </button>
+            </div>
+            <div class="kv-widget__body kv-widget__body--chart">
+                <t t-if="hasError">
+                    <p class="kv-widget__error text-danger mb-0" t-esc="props.widget.error"/>
+                </t>
+                <t t-elif="!(props.widget.data?.labels?.length)">
+                    <p class="text-muted mb-0">No data for this chart.</p>
+                </t>
+                <t t-else="">
+                    <canvas t-ref="canvas"/>
+                </t>
+            </div>
+        </div>
+    </t>
+</templates>

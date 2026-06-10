@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="dashboard_overview" model="kai.view.dashboard">
+        <field name="name">Overview</field>
+        <field name="description">Sample dashboard using core Odoo models. Duplicate and adapt for your addons.</field>
+        <field name="sequence">1</field>
+        <field name="is_shared" eval="True"/>
+    </record>
+
+    <record id="widget_contacts_kpi" model="kai.view.widget">
+        <field name="name">Contacts</field>
+        <field name="dashboard_id" ref="dashboard_overview"/>
+        <field name="sequence">1</field>
+        <field name="widget_type">kpi</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="domain">[('active', '=', True)]</field>
+        <field name="aggregate">count</field>
+        <field name="icon">fa-users</field>
+        <field name="subtitle">Active contacts</field>
+        <field name="grid_column">1</field>
+        <field name="grid_width">3</field>
+        <field name="color_index">4</field>
+    </record>
+
+    <record id="widget_companies_kpi" model="kai.view.widget">
+        <field name="name">Companies</field>
+        <field name="dashboard_id" ref="dashboard_overview"/>
+        <field name="sequence">2</field>
+        <field name="widget_type">kpi</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="domain">[('is_company', '=', True), ('active', '=', True)]</field>
+        <field name="aggregate">count</field>
+        <field name="icon">fa-building</field>
+        <field name="subtitle">Company records</field>
+        <field name="grid_column">4</field>
+        <field name="grid_width">3</field>
+        <field name="color_index">7</field>
+    </record>
+
+    <record id="widget_users_kpi" model="kai.view.widget">
+        <field name="name">Internal users</field>
+        <field name="dashboard_id" ref="dashboard_overview"/>
+        <field name="sequence">3</field>
+        <field name="widget_type">kpi</field>
+        <field name="model_id" ref="base.model_res_users"/>
+        <field name="domain">[('share', '=', False), ('active', '=', True)]</field>
+        <field name="aggregate">count</field>
+        <field name="icon">fa-user-circle</field>
+        <field name="grid_column">7</field>
+        <field name="grid_width">3</field>
+        <field name="color_index">2</field>
+    </record>
+
+    <record id="widget_partner_chart" model="kai.view.widget">
+        <field name="name">Contacts by type</field>
+        <field name="dashboard_id" ref="dashboard_overview"/>
+        <field name="sequence">10</field>
+        <field name="widget_type">chart</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="domain">[('active', '=', True)]</field>
+        <field name="groupby_field">country_id</field>
+        <field name="aggregate">count</field>
+        <field name="chart_type">doughnut</field>
+        <field name="grid_column">1</field>
+        <field name="grid_width">6</field>
+        <field name="color_index">1</field>
+    </record>
+
+    <record id="widget_partner_list" model="kai.view.widget">
+        <field name="name">Latest contacts</field>
+        <field name="dashboard_id" ref="dashboard_overview"/>
+        <field name="sequence">20</field>
+        <field name="widget_type">list</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="domain">[('active', '=', True)]</field>
+        <field name="list_fields">name,email,phone,city</field>
+        <field name="record_limit">6</field>
+        <field name="grid_column">7</field>
+        <field name="grid_width">6</field>
+    </record>
+
+    <record id="report_all_contacts" model="kai.view.report">
+        <field name="name">All contacts</field>
+        <field name="description">Open the full contact list with the default list view.</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="domain">[('active', '=', True)]</field>
+        <field name="is_shared" eval="True"/>
+        <field name="is_favorite" eval="True"/>
+    </record>
+
+    <record id="report_companies" model="kai.view.report">
+        <field name="name">Companies only</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="domain">[('is_company', '=', True)]</field>
+        <field name="is_shared" eval="True"/>
+    </record>
+</odoo>

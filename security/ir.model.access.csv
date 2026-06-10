@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_kai_view_dashboard_user,kai.view.dashboard user,model_kai_view_dashboard,group_kai_view_user,1,1,1,0
+access_kai_view_dashboard_manager,kai.view.dashboard manager,model_kai_view_dashboard,group_kai_view_manager,1,1,1,1
+access_kai_view_widget_user,kai.view.widget user,model_kai_view_widget,group_kai_view_user,1,1,1,1
+access_kai_view_widget_manager,kai.view.widget manager,model_kai_view_widget,group_kai_view_manager,1,1,1,1
+access_kai_view_report_user,kai.view.report user,model_kai_view_report,group_kai_view_user,1,1,1,0
+access_kai_view_report_manager,kai.view.report manager,model_kai_view_report,group_kai_view_manager,1,1,1,1

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="kaiSight.ListWidget">
+        <div class="kv-widget kv-widget--list" t-att-class="{ 'kv-widget--error': hasError }">
+            <div class="kv-widget__header">
+                <div class="kv-widget__title" t-esc="props.widget.name"/>
+                <div class="kv-widget__actions">
+                    <button type="button" class="btn btn-link btn-sm p-0 me-2" t-on-click="() => props.onOpenAll?.(props.widget)">
+                        View all
+                    </button>
+                    <button type="button" class="btn btn-link btn-sm p-0" title="Refresh" t-on-click="() => props.onRefresh?.(props.widget.id)">
+                        <i class="fa fa-refresh"/>
+                    </button>
+                </div>
+            </div>
+            <div class="kv-widget__body">
+                <t t-if="hasError">
+                    <p class="kv-widget__error text-danger mb-0" t-esc="props.widget.error"/>
+                </t>
+                <t t-elif="!rows.length">
+                    <p class="text-muted mb-0">No records match this filter.</p>
+                </t>
+                <t t-else="">
+                    <table class="table table-sm table-hover mb-0 kv-table">
+                        <thead>
+                            <tr>
+                                <t t-foreach="columns" t-as="col" t-key="col.name">
+                                    <th t-esc="col.label"/>
+                                </t>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="rows" t-as="row" t-key="row.id">
+                                <tr class="kv-table__row" t-on-click="() => props.onOpenRecord?.(props.widget, row.id)">
+                                    <t t-foreach="columns" t-as="col" t-key="col.name">
+                                        <td t-esc="row.values[col.name] ?? ''"/>
+                                    </t>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </t>
+            </div>
+        </div>
+    </t>
+</templates>
