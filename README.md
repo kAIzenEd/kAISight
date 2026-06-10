@@ -23,7 +23,7 @@ Interactive dashboards and saved reports for any Odoo model, built on the standa
 1. Clone this repository into your Odoo addons path:
 
    ```bash
-   git clone https://github.com/Kaiddons/kaiSight.git
+   git clone https://github.com/iamzic/kaiSight.git
    ```
 
 2. Update the apps list and install **kaiSight** from the Odoo Apps menu.
