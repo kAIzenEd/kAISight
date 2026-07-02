@@ -10,7 +10,7 @@
             </div>
             <div class="kv-widget__body kv-widget__body--chart">
                 <t t-if="hasError">
-                    <p class="kv-widget__error text-danger mb-0" t-esc="props.widget.error"/>
+                    <p class="kv-widget__error text-danger mb-0" t-esc="errorMessage"/>
                 </t>
                 <t t-elif="!(props.widget.data?.labels?.length)">
                     <p class="text-muted mb-0">No data for this chart.</p>

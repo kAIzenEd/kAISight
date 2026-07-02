@@ -7,6 +7,27 @@ from .action_utils import prepare_act_window_action
 _LIST_SKIP_TYPES = frozenset({"one2many", "many2many", "binary", "html", "reference"})
 
 
+class kaiSightReportField(models.Model):
+    _name = "kai.view.report.field"
+    _description = "kaiSight Report Field"
+    _order = "sequence, id"
+
+    report_id = fields.Many2one(
+        "kai.view.report",
+        string="Report",
+        required=True,
+        ondelete="cascade",
+    )
+    field_id = fields.Many2one(
+        "ir.model.fields",
+        string="Field",
+        required=True,
+        ondelete="cascade",
+        domain="[('model_id', '=', parent.model_id)]",
+    )
+    sequence = fields.Integer(default=10)
+
+
 class kaiSightReport(models.Model):
     _name = "kai.view.report"
     _description = "kaiSight Saved Report"
@@ -30,13 +51,10 @@ class kaiSightReport(models.Model):
         string="Target model",
         readonly=True,
     )
-    field_ids = fields.Many2many(
-        "ir.model.fields",
-        "kai_view_report_field_rel",
+    field_ids = fields.One2many(
+        "kai.view.report.field",
         "report_id",
-        "field_id",
         string="Columns",
-        domain="[('model_id', '=', model_id)]",
         help="Fields shown in the list view when opening this report.",
     )
     list_view_id = fields.Many2one(
@@ -130,7 +148,8 @@ class kaiSightReport(models.Model):
         self.ensure_one()
         names = []
         model = self.env[self.model_name] if self.model_name in self.env else None
-        for field in self.field_ids.sorted("name"):
+        for report_field in self.field_ids.sorted("sequence"):
+            field = report_field.field_id
             if field.ttype in _LIST_SKIP_TYPES:
                 continue
             if model and field.name not in model._fields:

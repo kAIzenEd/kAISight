@@ -16,7 +16,21 @@ Thumbs.db
 venv/
 env/
 
+# Python / test caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
 # Odoo
 *.log
 filestore/
 sessions/
+*.sqlite3
+*.db
+web.assets*
+__manifest__.pyc

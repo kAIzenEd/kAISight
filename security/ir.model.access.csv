@@ -5,3 +5,5 @@ access_kai_view_widget_user,kai.view.widget user,model_kai_view_widget,group_kai
 access_kai_view_widget_manager,kai.view.widget manager,model_kai_view_widget,group_kai_view_manager,1,1,1,1
 access_kai_view_report_user,kai.view.report user,model_kai_view_report,group_kai_view_user,1,1,1,0
 access_kai_view_report_manager,kai.view.report manager,model_kai_view_report,group_kai_view_manager,1,1,1,1
+access_kai_view_report_field_user,kai.view.report.field user,model_kai_view_report_field,group_kai_view_user,1,1,1,1
+access_kai_view_report_field_manager,kai.view.report.field manager,model_kai_view_report_field,group_kai_view_manager,1,1,1,1

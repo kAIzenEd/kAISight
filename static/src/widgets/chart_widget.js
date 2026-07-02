@@ -3,7 +3,7 @@
 import { loadBundle } from "@web/core/assets";
 import { getColor } from "@web/core/colors/colors";
 import { cookie } from "@web/core/browser/cookie";
-import { Component, onWillStart, useEffect, useRef } from "@odoo/owl";
+import { Component, onWillStart, useEffect, useRef, useState } from "@odoo/owl";
 
 export class kaiSightChartWidget extends Component {
     static template = "kaiSight.ChartWidget";
@@ -14,8 +14,15 @@ export class kaiSightChartWidget extends Component {
 
     setup() {
         this.canvasRef = useRef("canvas");
+        this.state = useState({ assetsError: null });
         this.chart = null;
-        onWillStart(async () => await loadBundle("web.chartjs_lib"));
+        onWillStart(async () => {
+            try {
+                await loadBundle("web.chartjs_lib");
+            } catch (_error) {
+                this.state.assetsError = "Chart library could not be loaded (offline or missing asset).";
+            }
+        });
         useEffect(
             () => {
                 this.renderChart();
@@ -31,7 +38,11 @@ export class kaiSightChartWidget extends Component {
     }
 
     get hasError() {
-        return Boolean(this.props.widget?.error);
+        return Boolean(this.props.widget?.error || this.state.assetsError);
+    }
+
+    get errorMessage() {
+        return this.props.widget?.error || this.state.assetsError || "";
     }
 
     renderChart() {
@@ -40,7 +51,7 @@ export class kaiSightChartWidget extends Component {
     }
     const Chart = window.Chart;
     if (!Chart) {
-        console.error("Chart.js is not loaded");
+        this.state.assetsError = "Chart library is not available.";
         return;
     }
 

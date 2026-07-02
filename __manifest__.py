@@ -24,6 +24,7 @@ create them programmatically on ``kai.view.dashboard``.
     ],
     "assets": {
         "web.assets_backend": [
+            ("include", "web.chartjs_lib"),
             "kaiSight/static/src/fields/kai_domain_field.js",
             "kaiSight/static/src/widgets/count_widget.xml",
             "kaiSight/static/src/widgets/chart_widget.xml",
@@ -39,4 +40,5 @@ create them programmatically on ``kai.view.dashboard``.
     "application": True,
     "installable": True,
     "icon": "/kaiSight/static/description/icon.svg",
+    #"post_init_hook": "migrate_report_fields.migrate",
 }
