@@ -5,9 +5,9 @@ from odoo.exceptions import UserError, ValidationError
 from .action_utils import prepare_act_window_action
 
 
-class kaiSightWidget(models.Model):
+class KaiSightWidget(models.Model):
     _name = "kai.view.widget"
-    _description = "kaiSight Dashboard Widget"
+    _description = "KaiSight Dashboard Widget"
     _inherit = ["kai.view.domain.mixin"]
     _order = "sequence, id"
 

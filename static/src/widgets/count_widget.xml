@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-    <t t-name="kaiSight.CountWidget">
+    <t t-name="kaisight.CountWidget">
         <div class="kv-widget kv-widget--kpi" t-att-class="{ 'kv-widget--error': hasError }">
             <div class="kv-widget__header">
                 <div class="kv-widget__title-wrap">

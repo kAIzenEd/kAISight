@@ -7,9 +7,9 @@ from .action_utils import prepare_act_window_action
 _LIST_SKIP_TYPES = frozenset({"one2many", "many2many", "binary", "html", "reference"})
 
 
-class kaiSightReportField(models.Model):
+class KaiSightReportField(models.Model):
     _name = "kai.view.report.field"
-    _description = "kaiSight Report Field"
+    _description = "KaiSight Report Field"
     _order = "sequence, id"
 
     report_id = fields.Many2one(
@@ -28,9 +28,9 @@ class kaiSightReportField(models.Model):
     sequence = fields.Integer(default=10)
 
 
-class kaiSightReport(models.Model):
+class KaiSightReport(models.Model):
     _name = "kai.view.report"
-    _description = "kaiSight Saved Report"
+    _description = "KaiSight Saved Report"
     _inherit = ["kai.view.domain.mixin"]
     _order = "sequence, name, id"
 
@@ -103,7 +103,7 @@ class kaiSightReport(models.Model):
         self.ensure_one()
         if self.env.su:
             return
-        if self.env.user.has_group("kAISight.group_kai_view_manager"):
+        if self.env.user.has_group("kaisight.group_kai_view_manager"):
             return
         if mode == "read" and self.is_shared:
             return

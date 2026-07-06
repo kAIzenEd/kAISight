@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-    <t t-name="kaiSight.Dashboard">
+    <t t-name="kaisight.Dashboard">
         <div class="o_kai_view_dashboard o_action o_view_controller kv-dashboard-root">
             <div class="kv-dashboard">
                 <header class="kv-dashboard__toolbar">

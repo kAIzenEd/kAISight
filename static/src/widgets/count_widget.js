@@ -3,8 +3,8 @@
 import { Component } from "@odoo/owl";
 import { formatFloat, humanNumber } from "@web/core/utils/numbers";
 
-export class kaiSightCountWidget extends Component {
-    static template = "kaiSight.CountWidget";
+export class KaiSightCountWidget extends Component {
+    static template = "kaisight.CountWidget";
     static props = {
         widget: Object,
         onOpen: { type: Function, optional: true },

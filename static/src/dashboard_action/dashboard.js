@@ -3,9 +3,9 @@
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { Component, onWillStart, useState } from "@odoo/owl";
-import { kaiSightCountWidget } from "../widgets/count_widget";
-import { kaiSightChartWidget } from "../widgets/chart_widget";
-import { kaiSightListWidget } from "../widgets/list_widget";
+import { KaiSightCountWidget } from "../widgets/count_widget";
+import { KaiSightChartWidget } from "../widgets/chart_widget";
+import { KaiSightListWidget } from "../widgets/list_widget";
 
 /**
  * Build a window action dict that satisfies the web client's ``views`` requirement.
@@ -48,12 +48,12 @@ function makeActWindowAction({
     return action;
 }
 
-export class kaiSightDashboardAction extends Component {
-    static template = "kaiSight.Dashboard";
+export class KaiSightDashboardAction extends Component {
+    static template = "kaisight.Dashboard";
     static components = {
-        KaiSightCountWidget: kaiSightCountWidget,
-        KaiSightChartWidget: kaiSightChartWidget,
-        KaiSightListWidget: kaiSightListWidget,
+        KaiSightCountWidget: KaiSightCountWidget,
+        KaiSightChartWidget: KaiSightChartWidget,
+        KaiSightListWidget: KaiSightListWidget,
     };
     static props = ["*"];
 
@@ -177,11 +177,11 @@ export class kaiSightDashboardAction extends Component {
     }
 
     openDashboardConfig() {
-        return this.actionService.doAction("kAISight.action_kai_view_dashboards");
+        return this.actionService.doAction("kaisight.action_kai_view_dashboards");
     }
 
     openReportsConfig() {
-        return this.actionService.doAction("kAISight.action_kai_view_reports");
+        return this.actionService.doAction("kaisight.action_kai_view_reports");
     }
 
     onDashboardChange(ev) {
@@ -192,4 +192,4 @@ export class kaiSightDashboardAction extends Component {
     }
 }
 
-registry.category("actions").add("kai_view_dashboard", kaiSightDashboardAction);
+registry.category("actions").add("kai_view_dashboard", KaiSightDashboardAction);

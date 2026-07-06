@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-    <t t-name="kaiSight.ListWidget">
+    <t t-name="kaisight.ListWidget">
         <div class="kv-widget kv-widget--list" t-att-class="{ 'kv-widget--error': hasError }">
             <div class="kv-widget__header">
                 <div class="kv-widget__title" t-esc="props.widget.name"/>

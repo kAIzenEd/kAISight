@@ -3,9 +3,9 @@ from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
 
 
-class kaiSightDashboard(models.Model):
+class KaiSightDashboard(models.Model):
     _name = "kai.view.dashboard"
-    _description = "kaiSight Dashboard"
+    _description = "KaiSight Dashboard"
     _order = "sequence, name, id"
 
     name = fields.Char(required=True, translate=True)
@@ -45,7 +45,7 @@ class kaiSightDashboard(models.Model):
         self.ensure_one()
         if self.env.su:
             return
-        if self.env.user.has_group("kAISight.group_kai_view_manager"):
+        if self.env.user.has_group("kaisight.group_kai_view_manager"):
             return
         if mode == "read" and self.is_shared:
             return
@@ -61,7 +61,7 @@ class kaiSightDashboard(models.Model):
             ("is_shared", "=", True),
             ("user_id", "=", self.env.uid),
         ]
-        if self.env.user.has_group("kAISight.group_kai_view_manager"):
+        if self.env.user.has_group("kaisight.group_kai_view_manager"):
             domain = []
         dashboards = self.search(domain, order="sequence, name")
         return [

@@ -5,8 +5,8 @@ import { getColor } from "@web/core/colors/colors";
 import { cookie } from "@web/core/browser/cookie";
 import { Component, onWillStart, useEffect, useRef, useState } from "@odoo/owl";
 
-export class kaiSightChartWidget extends Component {
-    static template = "kaiSight.ChartWidget";
+export class KaiSightChartWidget extends Component {
+    static template = "kaisight.ChartWidget";
     static props = {
         widget: Object,
         onRefresh: { type: Function, optional: true },

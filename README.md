@@ -1,4 +1,4 @@
-# kaiSight
+# kaisight
 
 Interactive dashboards and saved reports for any Odoo model, built on the standard ORM (`search_read`, `read_group`, `search_count`).
 
@@ -23,20 +23,20 @@ Interactive dashboards and saved reports for any Odoo model, built on the standa
 1. Clone this repository into your Odoo addons path:
 
    ```bash
-   git clone https://github.com/iamzic/kaiSight.git
+   git clone https://github.com/iamzic/kaisight.git
    ```
 
-2. Update the apps list and install **kaiSight** from the Odoo Apps menu.
+2. Update the apps list and install **kaisight** from the Odoo Apps menu.
 
-3. Open **kaiSight → Dashboard** to view the sample dashboard (demo data is loaded on install).
+3. Open **kaisight → Dashboard** to view the sample dashboard (demo data is loaded on install).
 
 ## Usage
 
 | Menu | Description |
 |------|-------------|
-| kaiSight → Dashboard | Main interactive dashboard view |
-| kaiSight → Configuration → Dashboards | Create and edit dashboards and widgets |
-| kaiSight → Configuration → Saved reports | Manage saved report shortcuts |
+| kaisight → Dashboard | Main interactive dashboard view |
+| kaisight → Configuration → Dashboards | Create and edit dashboards and widgets |
+| kaisight → Configuration → Saved reports | Manage saved report shortcuts |
 
 ### Widget types
 
@@ -71,7 +71,7 @@ self.env["kai.view.dashboard"].register_widgets_from_addon(
 After changing JavaScript or SCSS assets, upgrade the module and hard-refresh the browser:
 
 ```bash
-./odoo-bin -u kaiSight -d your_database
+./odoo-bin -u kaisight -d your_database
 ```
 
 ## Contributing

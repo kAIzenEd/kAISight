@@ -2,8 +2,8 @@
 
 import { Component } from "@odoo/owl";
 
-export class kaiSightListWidget extends Component {
-    static template = "kaiSight.ListWidget";
+export class KaiSightListWidget extends Component {
+    static template = "kaisight.ListWidget";
     static props = {
         widget: Object,
         onOpenRecord: { type: Function, optional: true },
