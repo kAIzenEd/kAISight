@@ -39,6 +39,6 @@ create them programmatically on ``kai.view.dashboard``.
     },
     "application": True,
     "installable": True,
-    "icon": "/kaiSight/static/description/icon.svg",
+    "icon": "static/description/icon.svg",
     #"post_init_hook": "migrate_report_fields.migrate",
 }
