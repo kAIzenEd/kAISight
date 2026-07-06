@@ -31,7 +31,7 @@
                             <field name="name"/>
                             <field name="model_id"/>
                             <field name="view_mode"/>
-                            <field name="user_id" groups="kaiSight.group_kai_view_manager"/>
+                            <field name="user_id" groups="kAISight.group_kai_view_manager"/>
                         </group>
                         <group>
                             <field name="is_shared"/>

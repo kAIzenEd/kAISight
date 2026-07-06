@@ -177,11 +177,11 @@ export class kaiSightDashboardAction extends Component {
     }
 
     openDashboardConfig() {
-        return this.actionService.doAction("kaiSight.action_kai_view_dashboards");
+        return this.actionService.doAction("kAISight.action_kai_view_dashboards");
     }
 
     openReportsConfig() {
-        return this.actionService.doAction("kaiSight.action_kai_view_reports");
+        return this.actionService.doAction("kAISight.action_kai_view_reports");
     }
 
     onDashboardChange(ev) {

@@ -33,7 +33,7 @@
                     <group>
                         <group>
                             <field name="name"/>
-                            <field name="user_id" groups="kaiSight.group_kai_view_manager"/>
+                            <field name="user_id" groups="kAISight.group_kai_view_manager"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
                         <group>

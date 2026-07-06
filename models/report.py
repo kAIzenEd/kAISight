@@ -103,7 +103,7 @@ class kaiSightReport(models.Model):
         self.ensure_one()
         if self.env.su:
             return
-        if self.env.user.has_group("kaiSight.group_kai_view_manager"):
+        if self.env.user.has_group("kAISight.group_kai_view_manager"):
             return
         if mode == "read" and self.is_shared:
             return
@@ -201,7 +201,7 @@ class kaiSightReport(models.Model):
             ("is_shared", "=", True),
             ("user_id", "=", self.env.uid),
         ]
-        if self.env.user.has_group("kaiSight.group_kai_view_manager"):
+        if self.env.user.has_group("kAISight.group_kai_view_manager"):
             domain = []
         reports = self.search(domain, order="sequence, name")
         return [

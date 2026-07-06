@@ -2,9 +2,9 @@
 <odoo>
     <menuitem id="menu_kai_view_root"
         name="kaiSight"
-        web_icon="kaiSight,static/description/icon.svg"
+        web_icon="kAISight,static/description/icon.svg"
         sequence="45"
-        groups="kaisight.group_kai_view_user"/>
+        groups="kAISight.group_kai_view_user"/>
 
     <menuitem id="menu_kai_view_dashboard"
         name="Dashboard"
@@ -16,7 +16,7 @@
         name="Configuration"
         parent="menu_kai_view_root"
         sequence="90"
-        groups="kaisight.group_kai_view_user"/>
+        groups="kAISight.group_kai_view_user"/>
 
     <menuitem id="menu_kai_view_dashboards"
         name="Dashboards"
