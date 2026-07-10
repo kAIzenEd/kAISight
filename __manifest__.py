@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     "name": "kaisight",
-    "version": "19.0.1.0.4",
+    "version": "19.0.1.1.2",
     "category": "Productivity/Reporting",
     "summary": "Interactive dashboards and saved reports for any Odoo model",
     "description": """
@@ -19,6 +19,8 @@ create them programmatically on ``kai.view.dashboard``.
         "security/ir.model.access.csv",
         "data/demo_dashboard.xml",
         "views/report_views.xml",
+        "views/report_builder_views.xml",
+        "report/export_report_templates.xml",
         "views/dashboard_views.xml",
         "views/menus.xml",
     ],
@@ -35,6 +37,9 @@ create them programmatically on ``kai.view.dashboard``.
             "kaisight/static/src/widgets/chart_widget.js",
             "kaisight/static/src/widgets/list_widget.js",
             "kaisight/static/src/dashboard_action/dashboard.js",
+            "kaisight/static/src/report_builder/report_builder.xml",
+            "kaisight/static/src/report_builder/report_builder.scss",
+            "kaisight/static/src/report_builder/report_builder.js",
         ],
     },
     "application": True,

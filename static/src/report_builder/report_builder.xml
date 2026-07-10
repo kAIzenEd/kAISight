@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="kaisight.SaveReportDialog">
+        <Dialog title="'Save report'" size="'md'">
+            <div class="p-2">
+                <div class="mb-3">
+                    <label class="form-label">Report name</label>
+                    <input type="text" class="form-control" t-model="state.name" placeholder="e.g. Active students — contact list"/>
+                </div>
+                <div class="form-check mb-2">
+                    <input type="checkbox" class="form-check-input" id="kaiSaveShared" t-model="state.isShared"/>
+                    <label class="form-check-label" for="kaiSaveShared">Share with all kaiSight users</label>
+                </div>
+                <div class="alert alert-danger py-2" t-if="state.error" t-esc="state.error"/>
+            </div>
+            <t t-set-slot="footer">
+                <button type="button" class="btn btn-secondary" t-on-click="props.close">Cancel</button>
+                <button type="button" class="btn btn-primary" t-att-disabled="state.saving" t-on-click="onConfirm">
+                    <t t-if="state.saving">Saving…</t>
+                    <t t-else="">Save</t>
+                </button>
+            </t>
+        </Dialog>
+    </t>
+
+    <t t-name="kaisight.ReportBuilder">
+        <div class="o_kai_report_builder o_action o_view_controller kv-report-builder">
+            <header class="kv-report-builder__header">
+                <div>
+                    <h1 class="kv-report-builder__title mb-1">
+                        <i class="fa fa-table me-2"/>Report Builder
+                    </h1>
+                    <p class="text-muted mb-0 small">
+                        Choose a data source, tick the columns you need, then export or save the report.
+                    </p>
+                </div>
+                <div class="kv-report-builder__header-actions">
+                    <button type="button" class="btn btn-link btn-sm" t-on-click="openSavedReports">
+                        Saved reports
+                    </button>
+                </div>
+            </header>
+
+            <t t-if="state.loading">
+                <div class="kv-report-builder__loading text-muted">
+                    <i class="fa fa-spinner fa-spin me-2"/>Loading…
+                </div>
+            </t>
+            <t t-elif="state.error">
+                <div class="alert alert-danger m-3" t-esc="state.error"/>
+            </t>
+            <t t-else="">
+                <div class="kv-report-builder__layout">
+                    <aside class="kv-report-builder__sources">
+                        <h2 class="kv-report-builder__section-title">1. Data source</h2>
+                        <t t-if="!state.sources.length">
+                            <p class="text-muted small">No data sources configured yet. Ask an administrator to add them under kaiSight → Configuration → Data sources.</p>
+                        </t>
+                        <t t-foreach="state.sources" t-as="source" t-key="source.id">
+                            <button type="button"
+                                class="kv-source-card"
+                                t-att-class="{'kv-source-card--active': state.selectedSource and state.selectedSource.id === source.id}"
+                                t-on-click="() => this.selectSource(source)">
+                                <i t-att-class="'fa ' + (source.icon || 'fa-table') + ' kv-source-card__icon'"/>
+                                <div class="kv-source-card__body">
+                                    <strong t-esc="source.name"/>
+                                    <span class="small text-muted d-block" t-if="source.description" t-esc="source.description"/>
+                                </div>
+                            </button>
+                        </t>
+                    </aside>
+
+                    <main class="kv-report-builder__main" t-if="state.selectedSource">
+                        <div class="kv-report-builder__filters" t-if="state.filterCatalog.length">
+                            <div class="kv-report-builder__filters-header">
+                                <div>
+                                    <h2 class="kv-report-builder__section-title mb-1">2. Filter records</h2>
+                                    <span class="text-muted small">
+                                        Narrow results by gender, city, class, and more
+                                        <t t-if="activeFilterCount"> · <t t-esc="activeFilterCount"/> active</t>
+                                    </span>
+                                </div>
+                                <div class="kv-report-builder__filters-actions">
+                                    <button type="button" class="btn btn-link btn-sm p-0" t-if="hasActiveFilters" t-on-click="clearAllFilters">
+                                        Clear filters
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" t-on-click="openFilters">
+                                        Advanced…
+                                    </button>
+                                    <button type="button" class="btn btn-link btn-sm p-0" t-on-click="toggleFiltersPanel">
+                                        <t t-if="state.showFiltersPanel">Hide</t>
+                                        <t t-else="">Show</t>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="kv-filter-grid" t-if="state.showFiltersPanel">
+                                <t t-foreach="state.filterCatalog" t-as="filter" t-key="filter.name">
+                                    <label class="kv-filter-field">
+                                        <span class="kv-filter-field__label" t-esc="filter.label"/>
+                                        <t t-if="filter.type === 'char' or filter.type === 'text'">
+                                            <input type="text" class="form-control form-control-sm"
+                                                t-att-placeholder="filter.placeholder || 'Contains…'"
+                                                t-att-value="filterTextValue(filter.name)"
+                                                t-on-change="(ev) => this.onQuickFilterText(filter.name, ev)"/>
+                                        </t>
+                                        <t t-else="">
+                                            <select class="form-select form-select-sm"
+                                                t-att-value="filterSelectValue(filter.name)"
+                                                t-on-change="(ev) => this.onQuickFilterChange(filter.name, ev.target.value)">
+                                                <option value="">All</option>
+                                                <t t-foreach="filter.options || []" t-as="option" t-key="option.value">
+                                                    <option t-att-value="option.value" t-esc="option.label"/>
+                                                </t>
+                                            </select>
+                                        </t>
+                                    </label>
+                                </t>
+                            </div>
+                        </div>
+
+                        <div class="kv-report-builder__toolbar">
+                            <div>
+                                <h2 class="kv-report-builder__section-title mb-1">3. Columns</h2>
+                                <span class="text-muted small">
+                                    <t t-esc="state.selectedCount"/> selected
+                                    <t t-if="state.recordCount !== null"> · <t t-esc="state.recordCount"/> records match</t>
+                                </span>
+                            </div>
+                            <div class="kv-report-builder__toolbar-actions">
+                                <input type="search" class="form-control form-control-sm kv-report-builder__search"
+                                    placeholder="Search fields…" t-model="state.fieldSearch"/>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" t-on-click="selectRecommended">Recommended</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" t-on-click="selectAllVisible">Select all</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" t-on-click="clearSelection">Clear</button>
+                            </div>
+                        </div>
+
+                        <div class="kv-field-groups">
+                            <t t-foreach="filteredGroups" t-as="group" t-key="group.id">
+                                <section class="kv-field-group">
+                                    <h3 class="kv-field-group__title" t-esc="group.label"/>
+                                    <div class="kv-field-grid">
+                                        <t t-foreach="group.fields" t-as="field" t-key="field.name">
+                                            <label class="kv-field-check">
+                                                <input type="checkbox"
+                                                    t-att-checked="isFieldSelected(field.name)"
+                                                    t-on-change="() => this.toggleField(field.name)"/>
+                                                <span class="kv-field-check__label" t-esc="field.label"/>
+                                                <span class="kv-field-check__meta text-muted" t-esc="field.name"/>
+                                            </label>
+                                        </t>
+                                    </div>
+                                </section>
+                            </t>
+                            <t t-if="!filteredGroups.length">
+                                <p class="text-muted">No fields match your search.</p>
+                            </t>
+                        </div>
+
+                        <footer class="kv-report-builder__footer">
+                            <button type="button" class="btn btn-secondary" t-on-click="openInOdoo" t-att-disabled="state.exporting">
+                                <i class="fa fa-external-link me-1"/>Preview in Odoo
+                            </button>
+                            <button type="button" class="btn btn-outline-primary" t-on-click="openSaveDialog" t-att-disabled="state.exporting">
+                                <i class="fa fa-save me-1"/>Save report
+                            </button>
+                            <button type="button" class="btn btn-primary" t-on-click="() => this.exportReport('csv')" t-att-disabled="state.exporting">
+                                <i class="fa fa-download me-1"/>Export CSV
+                            </button>
+                            <button type="button" class="btn btn-primary" t-on-click="() => this.exportReport('xlsx')" t-att-disabled="state.exporting">
+                                <i class="fa fa-file-excel-o me-1"/>Export Excel
+                            </button>
+                            <button type="button" class="btn btn-primary" t-on-click="() => this.exportReport('pdf')" t-att-disabled="state.exporting">
+                                <i class="fa fa-file-pdf-o me-1"/>Export PDF
+                            </button>
+                        </footer>
+                    </main>
+
+                    <div class="kv-report-builder__placeholder" t-else="">
+                        <div class="text-center text-muted py-5">
+                            <i class="fa fa-hand-pointer-o fa-2x mb-3 d-block"/>
+                            <p class="mb-0">Select a data source on the left to choose columns.</p>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>

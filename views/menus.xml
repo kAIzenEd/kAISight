@@ -12,6 +12,12 @@
         action="action_kai_view_dashboard_client"
         sequence="1"/>
 
+    <menuitem id="menu_kai_view_report_builder"
+        name="Report Builder"
+        parent="menu_kai_view_root"
+        action="action_kai_view_report_builder_client"
+        sequence="5"/>
+
     <menuitem id="menu_kai_view_configuration"
         name="Configuration"
         parent="menu_kai_view_root"
@@ -29,4 +35,11 @@
         parent="menu_kai_view_configuration"
         action="action_kai_view_reports"
         sequence="2"/>
+
+    <menuitem id="menu_kai_view_report_sources"
+        name="Data sources"
+        parent="menu_kai_view_configuration"
+        action="action_kai_view_report_sources"
+        sequence="3"
+        groups="kaisight.group_kai_view_manager"/>
 </odoo>

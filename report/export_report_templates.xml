@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_export_table" model="ir.actions.report">
+        <field name="name">kaiSight Export</field>
+        <field name="model">kai.view.report.builder</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">kaisight.export_table</field>
+        <field name="report_file">kaisight.export_table</field>
+        <field name="print_report_name">'Export - %s' % (object.name or 'Report')</field>
+    </record>
+
+    <template id="export_table">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2 t-esc="report_title"/>
+                        <p class="text-muted small">
+                            <t t-esc="record_count"/> records
+                            <t t-if="generated_on"> · Generated <t t-esc="generated_on"/></t>
+                        </p>
+                        <table class="table table-sm table-bordered o_kai_export_table mt-3">
+                            <thead>
+                                <tr>
+                                    <t t-foreach="headers" t-as="header">
+                                        <th t-esc="header"/>
+                                    </t>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-if="not rows">
+                                    <tr>
+                                        <td t-att-colspan="len(headers)" class="text-center text-muted">
+                                            No records match the selected filters.
+                                        </td>
+                                    </tr>
+                                </t>
+                                <t t-foreach="rows" t-as="row">
+                                    <tr>
+                                        <t t-foreach="row" t-as="cell">
+                                            <td t-esc="cell"/>
+                                        </t>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>
