@@ -50,7 +50,7 @@
                 </div>
                 <div class="form-check mb-2">
                     <input type="checkbox" class="form-check-input" id="kaiSaveShared" t-model="state.isShared"/>
-                    <label class="form-check-label" for="kaiSaveShared">Share with all kaiSight users</label>
+                    <label class="form-check-label" for="kaiSaveShared">Share with all kaisight users</label>
                 </div>
                 <div class="alert alert-danger py-2" t-if="state.error" t-esc="state.error"/>
             </div>
@@ -107,7 +107,7 @@
                                 <i class="fa fa-plus me-1"/>Add data source
                             </button>
                             <p class="text-muted small" t-else="">
-                                Ask a kaiSight administrator to add data sources.
+                                Ask a kaisight administrator to add data sources.
                             </p>
                         </t>
                         <t t-foreach="state.sources" t-as="source" t-key="source.id">

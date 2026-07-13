@@ -7,9 +7,9 @@ from .action_utils import prepare_act_window_action
 _LIST_SKIP_TYPES = frozenset({"one2many", "many2many", "binary", "html", "reference"})
 
 
-class KaiSightReportField(models.Model):
+class KaisightReportField(models.Model):
     _name = "kai.view.report.field"
-    _description = "KaiSight Report Field"
+    _description = "kaisight Report Field"
     _order = "sequence, id"
 
     report_id = fields.Many2one(
@@ -28,9 +28,9 @@ class KaiSightReportField(models.Model):
     sequence = fields.Integer(default=10)
 
 
-class KaiSightReport(models.Model):
+class KaisightReport(models.Model):
     _name = "kai.view.report"
-    _description = "KaiSight Saved Report"
+    _description = "kaisight Saved Report"
     _inherit = ["kai.view.domain.mixin"]
     _order = "sequence, name, id"
 
@@ -185,7 +185,7 @@ class KaiSightReport(models.Model):
             else:
                 view = self.env["ir.ui.view"].sudo().create(
                     {
-                        "name": "kaiSight report %s" % report.id,
+                        "name": "kaisight report %s" % report.id,
                         "type": "list",
                         "model": report.model_name,
                         "arch": arch,

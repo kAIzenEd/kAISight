@@ -6,7 +6,7 @@ import { Component, onWillStart, useState } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { Dialog } from "@web/core/dialog/dialog";
 
-export class KaiSightSaveReportDialog extends Component {
+export class KaisightSaveReportDialog extends Component {
     static template = "kaisight.SaveReportDialog";
     static components = { Dialog };
     static props = {
@@ -41,7 +41,7 @@ export class KaiSightSaveReportDialog extends Component {
     }
 }
 
-export class KaiSightAddSourceDialog extends Component {
+export class KaisightAddSourceDialog extends Component {
     static template = "kaisight.AddSourceDialog";
     static components = { Dialog };
     static props = {
@@ -112,9 +112,9 @@ export class KaiSightAddSourceDialog extends Component {
     }
 }
 
-export class KaiSightReportBuilderAction extends Component {
+export class KaisightReportBuilderAction extends Component {
     static template = "kaisight.ReportBuilder";
-    static components = { KaiSightSaveReportDialog, KaiSightAddSourceDialog };
+    static components = { KaisightSaveReportDialog, KaisightAddSourceDialog };
     static props = ["*"];
 
     setup() {
@@ -180,7 +180,7 @@ export class KaiSightReportBuilderAction extends Component {
     }
 
     openAddSourceDialog() {
-        this.dialog.add(KaiSightAddSourceDialog, {
+        this.dialog.add(KaisightAddSourceDialog, {
             onAdded: async (source) => {
                 this.notification.add(_t("Data source added."), { type: "success" });
                 await this.loadSources(source.id);
@@ -451,7 +451,7 @@ export class KaiSightReportBuilderAction extends Component {
             this.notification.add(_t("Select at least one column."), { type: "warning" });
             return;
         }
-        this.dialog.add(KaiSightSaveReportDialog, {
+        this.dialog.add(KaisightSaveReportDialog, {
             defaultName: this.state.selectedSource?.name || "",
             onSave: this.saveReport.bind(this),
         });
@@ -480,4 +480,4 @@ export class KaiSightReportBuilderAction extends Component {
     }
 }
 
-registry.category("actions").add("kai_view_report_builder", KaiSightReportBuilderAction);
+registry.category("actions").add("kai_view_report_builder", KaisightReportBuilderAction);

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Install/upgrade helpers for kaiSight."""
+"""Install/upgrade helpers for kaisight."""
 import logging
 
 _logger = logging.getLogger(__name__)

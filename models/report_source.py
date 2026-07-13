@@ -17,9 +17,9 @@ _PREFERRED_DEFAULT_FIELDS = (
 )
 
 
-class KaiSightReportSource(models.Model):
+class KaisightReportSource(models.Model):
     _name = "kai.view.report.source"
-    _description = "kaiSight Exportable Data Source"
+    _description = "kaisight Exportable Data Source"
     _order = "sequence, name, id"
 
     name = fields.Char(required=True, translate=True)
@@ -37,7 +37,7 @@ class KaiSightReportSource(models.Model):
     group_ids = fields.Many2many(
         "res.groups",
         string="Allowed groups",
-        help="Leave empty to allow all kaiSight users who can read the model.",
+        help="Leave empty to allow all kaisight users who can read the model.",
     )
     default_field_ids = fields.Many2many(
         "ir.model.fields",
@@ -100,7 +100,7 @@ class KaiSightReportSource(models.Model):
     def get_model_catalog(self, search=""):
         """Return installable/reportable models the current user can read."""
         if not self.env.user.has_group("kaisight.group_kai_view_manager"):
-            raise AccessError(_("Only kaiSight administrators can browse models."))
+            raise AccessError(_("Only kaisight administrators can browse models."))
 
         domain = [
             ("transient", "=", False),
@@ -143,7 +143,7 @@ class KaiSightReportSource(models.Model):
     def add_data_source(self, model_name, name=None, description=None, icon=None):
         """Create a Report Builder card for any readable Odoo model."""
         if not self.env.user.has_group("kaisight.group_kai_view_manager"):
-            raise AccessError(_("Only kaiSight administrators can add data sources."))
+            raise AccessError(_("Only kaisight administrators can add data sources."))
         if not model_name or model_name not in self.env:
             raise UserError(_("Model “%s” is not available.") % model_name)
         if not self._user_can_read_model(model_name):

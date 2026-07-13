@@ -2,7 +2,7 @@
 <odoo>
 
     <record id="action_report_export_table" model="ir.actions.report">
-        <field name="name">kaiSight Export</field>
+        <field name="name">kaisight export</field>
         <field name="model">kai.view.report.builder</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">kaisight.export_table</field>

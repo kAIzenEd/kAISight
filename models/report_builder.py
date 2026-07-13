@@ -48,9 +48,9 @@ _QUICK_FILTER_PRIORITY = {
 _FILTERABLE_TYPES = frozenset({"selection", "char", "text", "many2one", "boolean", "date"})
 
 
-class KaiSightReportBuilder(models.TransientModel):
+class KaisightReportBuilder(models.TransientModel):
     _name = "kai.view.report.builder"
-    _description = "kaiSight Report Builder"
+    _description = "kaisight Report Builder"
     _inherit = ["kai.view.domain.mixin"]
 
     name = fields.Char(string="Report name")

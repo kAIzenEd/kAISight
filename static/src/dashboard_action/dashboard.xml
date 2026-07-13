@@ -6,7 +6,7 @@
                 <header class="kv-dashboard__toolbar">
                     <div class="kv-dashboard__toolbar-left">
                         <h1 class="kv-dashboard__brand mb-0">
-                            <i class="fa fa-line-chart me-2"/>kaiSight
+                            <i class="fa fa-line-chart me-2"/>kaisight
                         </h1>
                         <select class="form-select form-select-sm kv-dashboard__select"
                             t-att-value="state.selectedDashboardId"
@@ -62,14 +62,14 @@
                             <div class="kv-grid" t-else="">
                                 <t t-foreach="state.dashboard.widgets" t-as="widget" t-key="widget.id">
                                     <div class="kv-grid__item" t-att-style="gridStyle(widget)">
-                                        <KaiSightCountWidget t-if="widget.type === 'kpi'"
+                                        <KaisightCountWidget t-if="widget.type === 'kpi'"
                                             widget="widget"
                                             onRefresh.bind="refreshWidget"
                                             onOpen.bind="openWidgetAction"/>
-                                        <KaiSightChartWidget t-elif="widget.type === 'chart'"
+                                        <KaisightChartWidget t-elif="widget.type === 'chart'"
                                             widget="widget"
                                             onRefresh.bind="refreshWidget"/>
-                                        <KaiSightListWidget t-else=""
+                                        <KaisightListWidget t-else=""
                                             widget="widget"
                                             onRefresh.bind="refreshWidget"
                                             onOpenAll.bind="openWidgetAction"

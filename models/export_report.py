@@ -2,9 +2,9 @@
 from odoo import api, models
 
 
-class ReportKaiSightExportTable(models.AbstractModel):
+class ReportKaisightExportTable(models.AbstractModel):
     _name = "report.kaisight.export_table"
-    _description = "kaiSight tabular export PDF"
+    _description = "kaisight tabular export PDF"
 
     @api.model
     def _get_report_values(self, docids, data=None):

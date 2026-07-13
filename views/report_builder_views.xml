@@ -31,7 +31,7 @@
                         <group>
                             <field name="active"/>
                             <field name="group_ids" widget="many2many_tags"
-                                help="Leave empty to allow all kaiSight users who can read this model."/>
+                                help="Leave empty to allow all kaisight users who can read this model."/>
                         </group>
                     </group>
                     <field name="description" placeholder="Short help text shown in the report builder…"/>

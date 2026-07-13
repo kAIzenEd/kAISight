@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 {
     "name": "kaisight",
-    "version": "19.0.1.1.3",
+    "version": "19.0.1.1.4",
     "category": "Productivity/Reporting",
     "summary": "Interactive dashboards and saved reports for any Odoo model",
     "description": """
-kaiSight provides lightweight, interactive dashboards and saved report definitions
+kaisight provides lightweight, interactive dashboards and saved report definitions
 that work with any installed addon model via the ORM (search_read / read_group).
 
 Other addons can ship predefined dashboards and widgets through XML data or

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <menuitem id="menu_kai_view_root"
-        name="kaiSight"
+        name="kaisight"
         web_icon="kaisight,static/description/icon.svg"
         sequence="45"
         groups="kaisight.group_kai_view_user"/>
