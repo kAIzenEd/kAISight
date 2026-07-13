@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     "name": "kaisight",
-    "version": "19.0.1.1.2",
+    "version": "19.0.1.1.3",
     "category": "Productivity/Reporting",
     "summary": "Interactive dashboards and saved reports for any Odoo model",
     "description": """
@@ -10,6 +10,9 @@ that work with any installed addon model via the ORM (search_read / read_group).
 
 Other addons can ship predefined dashboards and widgets through XML data or
 create them programmatically on ``kai.view.dashboard``.
+
+Administrators can also pick any readable model (custom or native) as a Report
+Builder data source after install — no hardcoded school fields required.
     """,
     "author": "Kaiddons",
     "license": "LGPL-3",
@@ -17,6 +20,7 @@ create them programmatically on ``kai.view.dashboard``.
     "data": [
         "security/kai_view_security.xml",
         "security/ir.model.access.csv",
+        "security/ir_model_access_report_builder.xml",
         "data/demo_dashboard.xml",
         "views/report_views.xml",
         "views/report_builder_views.xml",
@@ -45,5 +49,5 @@ create them programmatically on ``kai.view.dashboard``.
     "application": True,
     "installable": True,
     "icon": "static/description/icon.svg",
-    #"post_init_hook": "migrate_report_fields.migrate",
+    "post_init_hook": "hooks.post_init_hook",
 }

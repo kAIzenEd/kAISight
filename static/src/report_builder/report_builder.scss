@@ -80,6 +80,35 @@
         min-width: 0;
     }
 
+    .kv-model-picker-list {
+        max-height: 280px;
+        overflow: auto;
+        border: 1px solid var(--border-color, #dee2e6);
+        border-radius: 0.375rem;
+    }
+
+    .kv-model-picker-item {
+        display: block;
+        width: 100%;
+        text-align: left;
+        border: 0;
+        border-bottom: 1px solid #f1f3f5;
+        background: #fff;
+        padding: 0.65rem 0.85rem;
+
+        &:last-child {
+            border-bottom: 0;
+        }
+
+        &:hover {
+            background: #f8f9fa;
+        }
+
+        &--active {
+            background: rgba(113, 75, 103, 0.08);
+        }
+    }
+
     .kv-report-builder__main {
         background: #fff;
         border: 1px solid var(--border-color, #dee2e6);

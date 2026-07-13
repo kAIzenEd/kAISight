@@ -41,9 +41,80 @@ export class KaiSightSaveReportDialog extends Component {
     }
 }
 
+export class KaiSightAddSourceDialog extends Component {
+    static template = "kaisight.AddSourceDialog";
+    static components = { Dialog };
+    static props = {
+        close: Function,
+        onAdded: Function,
+    };
+
+    setup() {
+        this.orm = useService("orm");
+        this.state = useState({
+            loading: true,
+            search: "",
+            models: [],
+            selectedModel: null,
+            label: "",
+            saving: false,
+            error: null,
+        });
+        onWillStart(async () => {
+            await this.loadModels();
+        });
+    }
+
+    async loadModels() {
+        this.state.loading = true;
+        this.state.error = null;
+        try {
+            this.state.models = await this.orm.call(
+                "kai.view.report.source",
+                "get_model_catalog",
+                [this.state.search]
+            );
+        } catch (e) {
+            this.state.error = e.message || _t("Could not load models.");
+        } finally {
+            this.state.loading = false;
+        }
+    }
+
+    async onSearchInput(ev) {
+        this.state.search = ev.target.value;
+        await this.loadModels();
+    }
+
+    selectModel(model) {
+        this.state.selectedModel = model;
+        this.state.label = model.name;
+    }
+
+    async onConfirm() {
+        if (!this.state.selectedModel) {
+            this.state.error = _t("Select a model / table.");
+            return;
+        }
+        this.state.saving = true;
+        this.state.error = null;
+        try {
+            const source = await this.orm.call("kai.view.report.source", "add_data_source", [
+                this.state.selectedModel.model,
+                this.state.label.trim() || this.state.selectedModel.name,
+            ]);
+            await this.props.onAdded(source);
+            this.props.close();
+        } catch (e) {
+            this.state.error = e.message || _t("Could not add data source.");
+            this.state.saving = false;
+        }
+    }
+}
+
 export class KaiSightReportBuilderAction extends Component {
     static template = "kaisight.ReportBuilder";
-    static components = { KaiSightSaveReportDialog };
+    static components = { KaiSightSaveReportDialog, KaiSightAddSourceDialog };
     static props = ["*"];
 
     setup() {
@@ -55,6 +126,7 @@ export class KaiSightReportBuilderAction extends Component {
         this.state = useState({
             loading: true,
             sources: [],
+            canManageSources: false,
             selectedSource: null,
             fieldGroups: [],
             filterCatalog: [],
@@ -74,24 +146,50 @@ export class KaiSightReportBuilderAction extends Component {
         });
     }
 
-    async loadSources() {
+    async loadSources(preferSourceId = null) {
         this.state.loading = true;
         this.state.error = null;
         try {
-            const sources = await this.orm.call(
+            const catalog = await this.orm.call(
                 "kai.view.report.builder",
                 "get_source_catalog",
                 []
             );
+            // Backward compatible if an older server still returns a bare list.
+            const sources = Array.isArray(catalog) ? catalog : catalog.sources || [];
             this.state.sources = sources;
-            if (sources.length === 1) {
-                await this.selectSource(sources[0]);
+            this.state.canManageSources = Array.isArray(catalog)
+                ? false
+                : !!catalog.can_manage_sources;
+
+            const preferred =
+                sources.find((s) => s.id === preferSourceId) ||
+                (sources.length === 1 ? sources[0] : null) ||
+                (this.state.selectedSource &&
+                    sources.find((s) => s.id === this.state.selectedSource.id));
+            if (preferred) {
+                await this.selectSource(preferred);
+            } else if (!sources.length) {
+                this.state.selectedSource = null;
             }
         } catch (e) {
             this.state.error = e.message || _t("Could not load data sources.");
         } finally {
             this.state.loading = false;
         }
+    }
+
+    openAddSourceDialog() {
+        this.dialog.add(KaiSightAddSourceDialog, {
+            onAdded: async (source) => {
+                this.notification.add(_t("Data source added."), { type: "success" });
+                await this.loadSources(source.id);
+            },
+        });
+    }
+
+    openManageSources() {
+        this.actionService.doAction("kaisight.action_kai_view_report_sources");
     }
 
     async selectSource(source) {

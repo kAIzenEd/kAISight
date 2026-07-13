@@ -107,7 +107,12 @@ class KaiSightReportBuilder(models.TransientModel):
                     "default_fields": source.sudo().default_field_ids.mapped("name"),
                 }
             )
-        return result
+        return {
+            "sources": result,
+            "can_manage_sources": self.env.user.has_group(
+                "kaisight.group_kai_view_manager"
+            ),
+        }
 
     @api.model
     def _field_category_key_from_meta(self, name, ftype):

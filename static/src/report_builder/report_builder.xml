@@ -1,5 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
+    <t t-name="kaisight.AddSourceDialog">
+        <Dialog title="'Add data source'" size="'md'">
+            <div class="p-2">
+                <p class="text-muted small mb-3">
+                    Choose any model you can read — Contacts, custom school tables, Accounting, etc.
+                </p>
+                <div class="mb-3">
+                    <input type="search" class="form-control" placeholder="Search models…"
+                        t-att-value="state.search" t-on-input="onSearchInput"/>
+                </div>
+                <div class="mb-3" t-if="state.selectedModel">
+                    <label class="form-label">Display name</label>
+                    <input type="text" class="form-control" t-model="state.label"/>
+                </div>
+                <t t-if="state.loading">
+                    <div class="text-muted"><i class="fa fa-spinner fa-spin me-1"/>Loading models…</div>
+                </t>
+                <div class="kv-model-picker-list" t-else="">
+                    <t t-if="!state.models.length">
+                        <p class="text-muted small mb-0">No matching models found (or they are already added).</p>
+                    </t>
+                    <button type="button" class="kv-model-picker-item"
+                        t-foreach="state.models" t-as="model" t-key="model.model"
+                        t-att-class="{'kv-model-picker-item--active': state.selectedModel and state.selectedModel.model === model.model}"
+                        t-on-click="() => this.selectModel(model)">
+                        <strong t-esc="model.name"/>
+                        <span class="small text-muted d-block" t-esc="model.model"/>
+                    </button>
+                </div>
+                <div class="alert alert-danger py-2 mt-2" t-if="state.error" t-esc="state.error"/>
+            </div>
+            <t t-set-slot="footer">
+                <button type="button" class="btn btn-secondary" t-on-click="props.close">Cancel</button>
+                <button type="button" class="btn btn-primary" t-att-disabled="state.saving or !state.selectedModel" t-on-click="onConfirm">
+                    <t t-if="state.saving">Adding…</t>
+                    <t t-else="">Add</t>
+                </button>
+            </t>
+        </Dialog>
+    </t>
+
     <t t-name="kaisight.SaveReportDialog">
         <Dialog title="'Save report'" size="'md'">
             <div class="p-2">
@@ -35,6 +76,9 @@
                     </p>
                 </div>
                 <div class="kv-report-builder__header-actions">
+                    <button type="button" class="btn btn-link btn-sm" t-if="state.canManageSources" t-on-click="openManageSources">
+                        Manage sources
+                    </button>
                     <button type="button" class="btn btn-link btn-sm" t-on-click="openSavedReports">
                         Saved reports
                     </button>
@@ -54,7 +98,17 @@
                     <aside class="kv-report-builder__sources">
                         <h2 class="kv-report-builder__section-title">1. Data source</h2>
                         <t t-if="!state.sources.length">
-                            <p class="text-muted small">No data sources configured yet. Ask an administrator to add them under kaiSight → Configuration → Data sources.</p>
+                            <p class="text-muted small mb-2">
+                                No data sources yet. Add the tables you want to export from
+                                (custom models or native Odoo ones).
+                            </p>
+                            <button type="button" class="btn btn-primary btn-sm w-100 mb-2"
+                                t-if="state.canManageSources" t-on-click="openAddSourceDialog">
+                                <i class="fa fa-plus me-1"/>Add data source
+                            </button>
+                            <p class="text-muted small" t-else="">
+                                Ask a kaiSight administrator to add data sources.
+                            </p>
                         </t>
                         <t t-foreach="state.sources" t-as="source" t-key="source.id">
                             <button type="button"
@@ -68,6 +122,10 @@
                                 </div>
                             </button>
                         </t>
+                        <button type="button" class="btn btn-outline-secondary btn-sm w-100 mt-2"
+                            t-if="state.canManageSources and state.sources.length" t-on-click="openAddSourceDialog">
+                            <i class="fa fa-plus me-1"/>Add data source
+                        </button>
                     </aside>
 
                     <main class="kv-report-builder__main" t-if="state.selectedSource">

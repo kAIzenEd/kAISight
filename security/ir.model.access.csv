@@ -7,7 +7,3 @@ access_kai_view_report_user,kai.view.report user,model_kai_view_report,group_kai
 access_kai_view_report_manager,kai.view.report manager,model_kai_view_report,group_kai_view_manager,1,1,1,1
 access_kai_view_report_field_user,kai.view.report.field user,model_kai_view_report_field,group_kai_view_user,1,1,1,1
 access_kai_view_report_field_manager,kai.view.report.field manager,model_kai_view_report_field,group_kai_view_manager,1,1,1,1
-access_kai_view_report_source_user,kai.view.report.source user,model_kai_view_report_source,group_kai_view_user,1,0,0,0
-access_kai_view_report_source_manager,kai.view.report.source manager,model_kai_view_report_source,group_kai_view_manager,1,1,1,1
-access_kai_view_report_builder_user,kai.view.report.builder user,model_kai_view_report_builder,group_kai_view_user,1,1,1,1
-access_kai_view_report_builder_manager,kai.view.report.builder manager,model_kai_view_report_builder,group_kai_view_manager,1,1,1,1
