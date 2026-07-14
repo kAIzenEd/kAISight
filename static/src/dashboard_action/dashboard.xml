@@ -92,7 +92,7 @@
                                 <t t-foreach="state.reports" t-as="report" t-key="report.id">
                                     <li class="list-group-item kv-sidebar__item">
                                         <button type="button" class="btn btn-link text-start p-0 w-100" t-on-click="() => this.onReportClick(report)">
-                                            <i t-att-class="'fa me-2 ' + (report.is_favorite ? 'fa-star text-warning' : 'fa-file-text-o')"/>
+                                            <i class="fa fa-file-text-o me-2"/>
                                             <span t-esc="report.name"/>
                                         </button>
                                         <div class="small text-muted" t-esc="report.model"/>

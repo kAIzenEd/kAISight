@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     "name": "kaisight",
-    "version": "19.0.1.1.4",
+    "version": "19.0.1.1.11",
     "category": "Productivity/Reporting",
     "summary": "Interactive dashboards and saved reports for any Odoo model",
     "description": """
@@ -16,13 +16,16 @@ Builder data source after install — no hardcoded school fields required.
     """,
     "author": "Kaiddons",
     "license": "LGPL-3",
-    "depends": ["base", "web"],
+    "depends": ["base", "web", "mail"],
     "data": [
         "security/kai_view_security.xml",
         "security/ir.model.access.csv",
         "security/ir_model_access_report_builder.xml",
+        "security/ir_model_access_meta.xml",
         "data/demo_dashboard.xml",
+        "data/report_schedule_cron.xml",
         "views/report_views.xml",
+        "views/report_schedule_views.xml",
         "views/report_builder_views.xml",
         "report/export_report_templates.xml",
         "views/dashboard_views.xml",
@@ -44,6 +47,7 @@ Builder data source after install — no hardcoded school fields required.
             "kaisight/static/src/report_builder/report_builder.xml",
             "kaisight/static/src/report_builder/report_builder.scss",
             "kaisight/static/src/report_builder/report_builder.js",
+            "kaisight/static/src/reports/saved_reports.scss",
         ],
     },
     "application": True,

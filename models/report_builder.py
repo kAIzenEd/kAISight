@@ -24,11 +24,16 @@ _QUICK_FILTER_PRIORITY = {
     "school.student": [
         "gender",
         "city",
+        "current_residence",
         "course",
+        "year_of_study",
         "class_id",
         "country_id",
         "study_mode",
         "state_name",
+        "ets_campus_location",
+        "family_quarters",
+        "blood_group",
     ],
     "school.admission": [
         "state",
@@ -445,7 +450,7 @@ class KaisightReportBuilder(models.TransientModel):
         }
 
     @api.model
-    def export_report(
+    def build_export_file(
         self,
         model_name,
         field_names,
@@ -454,6 +459,7 @@ class KaisightReportBuilder(models.TransientModel):
         quick_filters=None,
         report_title=None,
     ):
+        """Return ``(filename, content_bytes, mimetype)`` for a tabular export."""
         if not model_name or model_name not in self.env:
             raise UserError(_("Model “%s” is not available.") % model_name)
         self.env[model_name].check_access("read")
@@ -466,15 +472,20 @@ class KaisightReportBuilder(models.TransientModel):
         title = report_title or model_name.replace(".", " ").title()
 
         if export_format == "pdf":
+            from .export_report import _export_pdf_font_size
+
             ir_model = self._get_ir_model_record(model_name)
             builder = self.create(
                 {
                     "name": title,
                     "model_id": ir_model.id if ir_model else False,
-                    "domain": str(self.build_full_domain(model_name, domain_str, quick_filters)),
+                    "domain": str(
+                        self.build_full_domain(model_name, domain_str, quick_filters)
+                    ),
                 }
             )
             report = self.env.ref("kaisight.action_report_export_table")
+            column_count = len(labels)
             pdf_content, _report_format = report._render_qweb_pdf(
                 report.report_name,
                 res_ids=builder.ids,
@@ -484,11 +495,16 @@ class KaisightReportBuilder(models.TransientModel):
                     "report_title": title,
                     "record_count": len(rows),
                     "generated_on": fields.Datetime.now().strftime("%Y-%m-%d %H:%M"),
+                    "column_count": column_count,
+                    "font_size": _export_pdf_font_size(column_count),
                 },
             )
             builder.unlink()
-            filename = "%s_%s.pdf" % (safe_model, stamp)
-            return self._download_action(filename, pdf_content, "application/pdf")
+            return (
+                "%s_%s.pdf" % (safe_model, stamp),
+                pdf_content,
+                "application/pdf",
+            )
 
         if export_format == "xlsx":
             try:
@@ -507,17 +523,41 @@ class KaisightReportBuilder(models.TransientModel):
                 for col_idx, cell in enumerate(row):
                     sheet.write(row_idx, col_idx, cell)
             workbook.close()
-            filename = "%s_%s.xlsx" % (safe_model, stamp)
-            return self._download_action(
-                filename, buffer.getvalue(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            return (
+                "%s_%s.xlsx" % (safe_model, stamp),
+                buffer.getvalue(),
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             )
 
         buffer = io.StringIO()
         writer = csv.writer(buffer)
         writer.writerow(labels)
         writer.writerows(rows)
-        filename = "%s_%s.csv" % (safe_model, stamp)
-        return self._download_action(filename, buffer.getvalue().encode("utf-8-sig"), "text/csv")
+        return (
+            "%s_%s.csv" % (safe_model, stamp),
+            buffer.getvalue().encode("utf-8-sig"),
+            "text/csv",
+        )
+
+    @api.model
+    def export_report(
+        self,
+        model_name,
+        field_names,
+        domain_str="[]",
+        export_format="csv",
+        quick_filters=None,
+        report_title=None,
+    ):
+        filename, content, mimetype = self.build_export_file(
+            model_name,
+            field_names,
+            domain_str=domain_str,
+            export_format=export_format,
+            quick_filters=quick_filters,
+            report_title=report_title,
+        )
+        return self._download_action(filename, content, mimetype)
 
     @api.model
     def action_open_in_odoo(

@@ -12,11 +12,34 @@
         action="action_kai_view_dashboard_client"
         sequence="1"/>
 
-    <menuitem id="menu_kai_view_report_builder"
-        name="Report Builder"
+    <menuitem id="menu_kai_view_reports_root"
+        name="Reports"
         parent="menu_kai_view_root"
-        action="action_kai_view_report_builder_client"
         sequence="5"/>
+
+    <menuitem id="menu_kai_view_reports"
+        name="Saved Reports"
+        parent="menu_kai_view_reports_root"
+        action="action_kai_view_reports"
+        sequence="1"/>
+
+    <menuitem id="menu_kai_view_report_schedules"
+        name="Scheduled Reports"
+        parent="menu_kai_view_reports_root"
+        action="action_kai_view_report_schedules"
+        sequence="2"/>
+
+    <menuitem id="menu_kai_view_report_runs"
+        name="Generated Reports"
+        parent="menu_kai_view_reports_root"
+        action="action_kai_view_report_runs"
+        sequence="3"/>
+
+    <menuitem id="menu_kai_view_report_builder"
+        name="Data Export"
+        parent="menu_kai_view_reports_root"
+        action="action_kai_view_report_builder_client"
+        sequence="4"/>
 
     <menuitem id="menu_kai_view_configuration"
         name="Configuration"
@@ -29,12 +52,6 @@
         parent="menu_kai_view_configuration"
         action="action_kai_view_dashboards"
         sequence="1"/>
-
-    <menuitem id="menu_kai_view_reports"
-        name="Saved reports"
-        parent="menu_kai_view_configuration"
-        action="action_kai_view_reports"
-        sequence="2"/>
 
     <menuitem id="menu_kai_view_report_sources"
         name="Data sources"

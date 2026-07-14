@@ -6,3 +6,4 @@ from . import report
 from . import report_source
 from . import report_builder
 from . import export_report
+from . import report_schedule
