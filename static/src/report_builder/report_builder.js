@@ -129,6 +129,8 @@ export class KaisightReportBuilderAction extends Component {
             canManageSources: false,
             selectedSource: null,
             fieldGroups: [],
+            curatedFields: [],
+            showAllFields: false,
             filterCatalog: [],
             selectedFields: {},
             fieldSearch: "",
@@ -205,6 +207,19 @@ export class KaisightReportBuilderAction extends Component {
                 [source.model]
             );
             this.state.fieldGroups = catalog.groups || [];
+
+            const byName = {};
+            for (const group of this.state.fieldGroups) {
+                for (const field of group.fields || []) {
+                    byName[field.name] = field;
+                }
+            }
+            const curatedNames = source.default_fields || [];
+            this.state.curatedFields = curatedNames
+                .map((name) => byName[name])
+                .filter(Boolean);
+            this.state.showAllFields = this.state.curatedFields.length === 0;
+
             try {
                 const filterCatalog = await this.orm.call(
                     "kai.view.report.builder",
@@ -216,9 +231,11 @@ export class KaisightReportBuilderAction extends Component {
                 console.warn("Could not load quick filters", filterError);
                 this.state.filterCatalog = [];
             }
-            const defaults = source.default_fields || [];
-            if (defaults.length) {
-                this.state.selectedFields = Object.fromEntries(defaults.map((n) => [n, true]));
+
+            if (this.state.curatedFields.length) {
+                this.state.selectedFields = Object.fromEntries(
+                    this.state.curatedFields.map((field) => [field.name, true])
+                );
             } else {
                 const firstGroup = this.state.fieldGroups[0];
                 const pick = (firstGroup?.fields || []).slice(0, 6).map((f) => f.name);
@@ -230,12 +247,30 @@ export class KaisightReportBuilderAction extends Component {
         }
     }
 
+    get hasCuratedFields() {
+        return (this.state.curatedFields || []).length > 0;
+    }
+
     get filteredGroups() {
         const q = (this.state.fieldSearch || "").trim().toLowerCase();
-        if (!q) {
-            return this.state.fieldGroups;
+        const searching = !!q;
+
+        // Curated mode: only the common columns unless expanded or searching.
+        if (this.hasCuratedFields && !this.state.showAllFields && !searching) {
+            return [
+                {
+                    id: "curated",
+                    label: _t("Common columns"),
+                    fields: this.state.curatedFields,
+                },
+            ];
         }
-        return this.state.fieldGroups
+
+        const groups = this.state.fieldGroups;
+        if (!searching) {
+            return groups;
+        }
+        return groups
             .map((group) => ({
                 ...group,
                 fields: group.fields.filter(
@@ -269,7 +304,23 @@ export class KaisightReportBuilderAction extends Component {
         }
     }
 
+    toggleShowAllFields() {
+        this.state.showAllFields = !this.state.showAllFields;
+        if (!this.state.showAllFields) {
+            this.state.fieldSearch = "";
+        }
+    }
+
     selectRecommended() {
+        const curated = this.state.curatedFields || [];
+        if (curated.length) {
+            this.state.selectedFields = Object.fromEntries(
+                curated.map((field) => [field.name, true])
+            );
+            this.state.showAllFields = false;
+            this.state.fieldSearch = "";
+            return;
+        }
         const defaults = this.state.selectedSource?.default_fields || [];
         if (defaults.length) {
             this.state.selectedFields = Object.fromEntries(defaults.map((n) => [n, true]));
@@ -280,12 +331,15 @@ export class KaisightReportBuilderAction extends Component {
 
     selectAllVisible() {
         const names = [];
-        for (const group of this.state.fieldGroups) {
+        for (const group of this.filteredGroups) {
             for (const field of group.fields) {
                 names.push(field.name);
             }
         }
-        this.state.selectedFields = Object.fromEntries(names.map((n) => [n, true]));
+        this.state.selectedFields = {
+            ...this.state.selectedFields,
+            ...Object.fromEntries(names.map((n) => [n, true])),
+        };
     }
 
     clearSelection() {

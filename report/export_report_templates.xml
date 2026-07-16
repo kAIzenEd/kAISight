@@ -67,6 +67,19 @@
                             background: #efefef;
                             font-weight: 700;
                         }
+                        .o_kai_export_table td.o_kai_export_photo {
+                            text-align: center;
+                            vertical-align: middle;
+                            width: 56px;
+                        }
+                        .o_kai_export_table img.o_kai_export_photo_img {
+                            max-width: 48px;
+                            max-height: 48px;
+                            width: 48px;
+                            height: 48px;
+                            object-fit: cover;
+                            border-radius: 4px;
+                        }
                     </style>
                     <h2 t-esc="report_title"/>
                     <p class="o_kai_export_meta">
@@ -93,7 +106,19 @@
                             <t t-foreach="rows" t-as="row">
                                 <tr>
                                     <t t-foreach="row" t-as="cell">
-                                        <td t-esc="cell"/>
+                                        <t t-if="cell and isinstance(cell, dict) and cell.get('type') == 'image' and cell.get('value')">
+                                            <td class="o_kai_export_photo">
+                                                <img class="o_kai_export_photo_img"
+                                                     t-att-src="image_data_uri(cell['value'])"
+                                                     alt=""/>
+                                            </td>
+                                        </t>
+                                        <t t-elif="cell and isinstance(cell, dict)">
+                                            <td t-esc="cell.get('value') or ''"/>
+                                        </t>
+                                        <t t-else="">
+                                            <td t-esc="cell"/>
+                                        </t>
                                     </t>
                                 </tr>
                             </t>

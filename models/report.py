@@ -5,6 +5,14 @@ from odoo.exceptions import AccessError, UserError, ValidationError
 from .action_utils import prepare_act_window_action
 
 _LIST_SKIP_TYPES = frozenset({"one2many", "many2many", "binary", "html", "reference"})
+_IMAGE_FIELD_TOKENS = ("photo", "image", "avatar", "picture", "logo")
+
+
+def _is_image_field_name(field_name, field_type=None):
+    if field_type and field_type != "binary":
+        return False
+    lname = (field_name or "").lower()
+    return any(token in lname for token in _IMAGE_FIELD_TOKENS)
 
 
 class KaisightReportField(models.Model):
@@ -144,7 +152,7 @@ class KaisightReport(models.Model):
             raise UserError(_("Context must evaluate to a dict."))
         return ctx
 
-    def _get_list_field_names(self):
+    def _get_list_field_names(self, include_images=True):
         self.ensure_one()
         names = []
         # Field metadata is technical; resolve with sudo so report users
@@ -154,7 +162,8 @@ class KaisightReport(models.Model):
             field = report_field.field_id
             if not field:
                 continue
-            if field.ttype in _LIST_SKIP_TYPES:
+            is_image = _is_image_field_name(field.name, field.ttype)
+            if field.ttype in _LIST_SKIP_TYPES and not (include_images and is_image):
                 continue
             if model and field.name not in model._fields:
                 continue
@@ -163,7 +172,7 @@ class KaisightReport(models.Model):
 
     def _build_list_arch(self):
         self.ensure_one()
-        field_names = self._get_list_field_names()
+        field_names = self._get_list_field_names(include_images=True)
         if not field_names:
             field_names = ["name"] if "name" in self.env[self.model_name]._fields else []
         if not field_names:
@@ -172,7 +181,14 @@ class KaisightReport(models.Model):
             )
         parts = ["<list>"]
         for fname in field_names:
-            parts.append('<field name="%s"/>' % fname)
+            field = self.env[self.model_name]._fields.get(fname)
+            if field and _is_image_field_name(fname, field.type):
+                parts.append(
+                    '<field name="%s" widget="image" options="{\'size\': [40, 40]}"/>'
+                    % fname
+                )
+            else:
+                parts.append('<field name="%s"/>' % fname)
         parts.append("</list>")
         return "".join(parts)
 

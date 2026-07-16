@@ -7,7 +7,7 @@ from datetime import date, datetime
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
 
-from .report import _LIST_SKIP_TYPES
+from .report import _IMAGE_FIELD_TOKENS, _LIST_SKIP_TYPES, _is_image_field_name
 
 _FIELD_CATEGORY_ORDER = [
     ("identity", _("Names & IDs")),
@@ -95,6 +95,42 @@ class KaisightReportBuilder(models.TransientModel):
         return True
 
     @api.model
+    def _ordered_default_field_names(self, source):
+        """Return recommended column names in a stable, business-friendly order.
+
+        Prefer the Student directory saved-report column order when this source
+        is ``school.student``; otherwise keep configured defaults.
+        """
+        configured = source.sudo().default_field_ids.mapped("name")
+        model_name = source.model_name
+        preferred = []
+        if model_name == "school.student":
+            report = self.env.ref(
+                "kaierp.report_student_directory", raise_if_not_found=False
+            )
+            if report and report.field_ids:
+                preferred = [
+                    line.field_id.name
+                    for line in report.field_ids.sorted("sequence")
+                    if line.field_id and line.field_id.name
+                ]
+        if preferred:
+            # When defaults are empty on the source, use the full directory list.
+            # When defaults exist, keep directory order for those that intersect,
+            # then append any extra configured fields.
+            if not configured:
+                return [
+                    name
+                    for name in preferred
+                    if model_name in self.env and name in self.env[model_name]._fields
+                ]
+            configured_set = set(configured)
+            ordered = [name for name in preferred if name in configured_set]
+            ordered.extend(name for name in configured if name not in ordered)
+            return ordered
+        return list(configured)
+
+    @api.model
     def get_source_catalog(self):
         """Return data sources the current user may export from."""
         sources = self.env["kai.view.report.source"].search([])
@@ -102,6 +138,7 @@ class KaisightReportBuilder(models.TransientModel):
         for source in sources:
             if not self._source_visible_for_user(source):
                 continue
+            defaults = self._ordered_default_field_names(source)
             result.append(
                 {
                     "id": source.id,
@@ -109,7 +146,8 @@ class KaisightReportBuilder(models.TransientModel):
                     "description": source.description or "",
                     "icon": source.icon or "fa-table",
                     "model": source.model_name,
-                    "default_fields": source.sudo().default_field_ids.mapped("name"),
+                    "default_fields": defaults,
+                    "has_curated_fields": bool(defaults),
                 }
             )
         return {
@@ -173,6 +211,11 @@ class KaisightReportBuilder(models.TransientModel):
         return ", ".join(safe_parts) if safe_parts else "id"
 
     @api.model
+    def _is_image_export_field(self, field_name, field_type=None):
+        """Binary photo/image fields may appear in PDF exports (not Excel/CSV)."""
+        return _is_image_field_name(field_name, field_type)
+
+    @api.model
     def get_field_catalog(self, model_name):
         """Return exportable fields grouped for checkbox selection."""
         if not model_name or model_name not in self.env:
@@ -185,20 +228,26 @@ class KaisightReportBuilder(models.TransientModel):
         buckets = {key: [] for key, _label in _FIELD_CATEGORY_ORDER}
         for field_name, info in fields_info.items():
             ftype = info.get("type")
-            if ftype in _LIST_SKIP_TYPES:
-                continue
             if field_name not in model._fields:
                 continue
             if field_name.startswith("_"):
                 continue
+            is_image = self._is_image_export_field(field_name, ftype)
+            if ftype in _LIST_SKIP_TYPES and not is_image:
+                continue
             field = model._fields[field_name]
-            category = self._field_category_key_from_meta(field_name, ftype)
+            category = (
+                "identity"
+                if is_image
+                else self._field_category_key_from_meta(field_name, ftype)
+            )
             buckets.setdefault(category, []).append(
                 {
                     "name": field_name,
                     "label": info.get("string") or field.string or field_name,
                     "type": ftype,
                     "required": bool(field.required),
+                    "is_image": is_image,
                 }
             )
 
@@ -340,8 +389,12 @@ class KaisightReportBuilder(models.TransientModel):
     # ------------------------------------------------------------------
 
     @api.model
-    def _format_export_value(self, record, field_name, field_type):
+    def _format_export_value(self, record, field_name, field_type, for_pdf=False):
         value = record[field_name]
+        if for_pdf and self._is_image_export_field(field_name, field_type):
+            if not value:
+                return {"type": "text", "value": ""}
+            return {"type": "image", "value": value}
         if value is False or value is None:
             return ""
         if field_type == "many2one":
@@ -359,10 +412,12 @@ class KaisightReportBuilder(models.TransientModel):
             return fields.Date.to_string(value)
         if field_type == "datetime" and isinstance(value, datetime):
             return fields.Datetime.to_string(value)
+        if field_type == "binary":
+            return ""
         return value
 
     @api.model
-    def _resolve_field_names(self, model_name, field_names):
+    def _resolve_field_names(self, model_name, field_names, allow_images=False):
         if not field_names:
             raise UserError(_("Select at least one column to export."))
         model = self.env[model_name]
@@ -373,7 +428,8 @@ class KaisightReportBuilder(models.TransientModel):
             if name not in model._fields:
                 continue
             ftype = fields_info[name]["type"]
-            if ftype in _LIST_SKIP_TYPES:
+            is_image = self._is_image_export_field(name, ftype)
+            if ftype in _LIST_SKIP_TYPES and not (allow_images and is_image):
                 continue
             resolved.append(name)
             labels.append(fields_info[name].get("string") or name)
@@ -415,9 +471,13 @@ class KaisightReportBuilder(models.TransientModel):
         return wizard.id
 
     @api.model
-    def _build_export_rows(self, model_name, field_names, domain_str="[]", quick_filters=None):
+    def _build_export_rows(
+        self, model_name, field_names, domain_str="[]", quick_filters=None, for_pdf=False
+    ):
         domain = self.build_full_domain(model_name, domain_str, quick_filters)
-        names, labels = self._resolve_field_names(model_name, field_names)
+        names, labels = self._resolve_field_names(
+            model_name, field_names, allow_images=for_pdf
+        )
         model = self.env[model_name]
         records = model.search(domain, order="id")
         fields_info = model.fields_get(attributes=["type"])
@@ -426,7 +486,10 @@ class KaisightReportBuilder(models.TransientModel):
             rows.append(
                 [
                     self._format_export_value(
-                        record, name, fields_info[name]["type"]
+                        record,
+                        name,
+                        fields_info[name]["type"],
+                        for_pdf=for_pdf,
                     )
                     for name in names
                 ]
@@ -464,9 +527,6 @@ class KaisightReportBuilder(models.TransientModel):
             raise UserError(_("Model “%s” is not available.") % model_name)
         self.env[model_name].check_access("read")
 
-        labels, rows = self._build_export_rows(
-            model_name, field_names, domain_str, quick_filters
-        )
         stamp = fields.Datetime.now().strftime("%Y%m%d_%H%M%S")
         safe_model = model_name.replace(".", "_")
         title = report_title or model_name.replace(".", " ").title()
@@ -474,6 +534,13 @@ class KaisightReportBuilder(models.TransientModel):
         if export_format == "pdf":
             from .export_report import _export_pdf_font_size
 
+            labels, rows = self._build_export_rows(
+                model_name,
+                field_names,
+                domain_str,
+                quick_filters,
+                for_pdf=True,
+            )
             ir_model = self._get_ir_model_record(model_name)
             builder = self.create(
                 {
@@ -497,6 +564,11 @@ class KaisightReportBuilder(models.TransientModel):
                     "generated_on": fields.Datetime.now().strftime("%Y-%m-%d %H:%M"),
                     "column_count": column_count,
                     "font_size": _export_pdf_font_size(column_count),
+                    "has_images": any(
+                        isinstance(cell, dict) and cell.get("type") == "image"
+                        for row in rows
+                        for cell in row
+                    ),
                 },
             )
             builder.unlink()
@@ -505,6 +577,10 @@ class KaisightReportBuilder(models.TransientModel):
                 pdf_content,
                 "application/pdf",
             )
+
+        labels, rows = self._build_export_rows(
+            model_name, field_names, domain_str, quick_filters, for_pdf=False
+        )
 
         if export_format == "xlsx":
             try:
@@ -521,7 +597,7 @@ class KaisightReportBuilder(models.TransientModel):
                 sheet.write(0, col, label, header_fmt)
             for row_idx, row in enumerate(rows, start=1):
                 for col_idx, cell in enumerate(row):
-                    sheet.write(row_idx, col_idx, cell)
+                    sheet.write(row_idx, col_idx, cell if not isinstance(cell, dict) else "")
             workbook.close()
             return (
                 "%s_%s.xlsx" % (safe_model, stamp),

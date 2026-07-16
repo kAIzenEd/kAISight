@@ -188,6 +188,17 @@
         padding: 1rem 1.25rem;
     }
 
+    .kv-report-builder__more-fields {
+        padding: 0 1.25rem 1rem;
+        border-top: 1px dashed var(--border-color, #dee2e6);
+        padding-top: 0.75rem;
+        margin: 0 0 0.25rem;
+
+        .btn-link {
+            font-weight: 600;
+        }
+    }
+
     .kv-field-group {
         margin-bottom: 1.25rem;
 

@@ -183,12 +183,19 @@
                                     <t t-esc="state.selectedCount"/> selected
                                     <t t-if="state.recordCount !== null"> · <t t-esc="state.recordCount"/> records match</t>
                                 </span>
+                                <p class="text-muted small mb-0 mt-1" t-if="hasCuratedFields and !state.showAllFields and !state.fieldSearch">
+                                    Showing the common directory columns. Uncheck what you don’t need, or open all fields below.
+                                </p>
                             </div>
                             <div class="kv-report-builder__toolbar-actions">
                                 <input type="search" class="form-control form-control-sm kv-report-builder__search"
                                     placeholder="Search fields…" t-model="state.fieldSearch"/>
-                                <button type="button" class="btn btn-outline-secondary btn-sm" t-on-click="selectRecommended">Recommended</button>
-                                <button type="button" class="btn btn-outline-secondary btn-sm" t-on-click="selectAllVisible">Select all</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm"
+                                    t-if="hasCuratedFields"
+                                    t-on-click="selectRecommended">
+                                    Common set
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" t-on-click="selectAllVisible">Select visible</button>
                                 <button type="button" class="btn btn-outline-secondary btn-sm" t-on-click="clearSelection">Clear</button>
                             </div>
                         </div>
@@ -213,6 +220,18 @@
                             <t t-if="!filteredGroups.length">
                                 <p class="text-muted">No fields match your search.</p>
                             </t>
+                        </div>
+
+                        <div class="kv-report-builder__more-fields" t-if="hasCuratedFields and !state.fieldSearch">
+                            <button type="button" class="btn btn-link btn-sm px-0"
+                                t-on-click="toggleShowAllFields">
+                                <t t-if="state.showAllFields">
+                                    <i class="fa fa-compress me-1"/>Show common columns only
+                                </t>
+                                <t t-else="">
+                                    <i class="fa fa-plus-square-o me-1"/>View all fields
+                                </t>
+                            </button>
                         </div>
 
                         <footer class="kv-report-builder__footer">

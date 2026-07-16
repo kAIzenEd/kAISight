@@ -35,4 +35,5 @@ class ReportKaisightExportTable(models.AbstractModel):
             "generated_on": data.get("generated_on", ""),
             "column_count": column_count,
             "font_size": data.get("font_size") or _export_pdf_font_size(column_count),
+            "has_images": data.get("has_images", False),
         }

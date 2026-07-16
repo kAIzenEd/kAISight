@@ -36,7 +36,7 @@
         sequence="3"/>
 
     <menuitem id="menu_kai_view_report_builder"
-        name="Data Export"
+        name="Report Builder"
         parent="menu_kai_view_reports_root"
         action="action_kai_view_report_builder_client"
         sequence="4"/>
