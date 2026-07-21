@@ -134,6 +134,8 @@ export class KaisightReportBuilderAction extends Component {
             collapsedFieldGroups: {},
             filterCatalog: [],
             selectedFields: {},
+            selectedOrder: [],
+            dragFieldName: null,
             fieldSearch: "",
             quickFilters: {},
             domain: "[]",
@@ -235,13 +237,11 @@ export class KaisightReportBuilderAction extends Component {
             }
 
             if (this.state.curatedFields.length) {
-                this.state.selectedFields = Object.fromEntries(
-                    this.state.curatedFields.map((field) => [field.name, true])
-                );
+                this.applySelection(this.state.curatedFields.map((field) => field.name));
             } else {
                 const firstGroup = this.state.fieldGroups[0];
                 const pick = (firstGroup?.fields || []).slice(0, 6).map((f) => f.name);
-                this.state.selectedFields = Object.fromEntries(pick.map((n) => [n, true]));
+                this.applySelection(pick);
             }
             await this.refreshCount();
         } catch (e) {
@@ -284,12 +284,40 @@ export class KaisightReportBuilderAction extends Component {
             .filter((g) => g.fields.length);
     }
 
+    // Single source of truth for the export column order is state.selectedOrder.
+    // state.selectedFields is kept as a lookup map so checkbox rendering stays O(1).
+    applySelection(names) {
+        const seen = new Set();
+        const order = [];
+        for (const name of names) {
+            if (name && !seen.has(name)) {
+                seen.add(name);
+                order.push(name);
+            }
+        }
+        this.state.selectedOrder = order;
+        this.state.selectedFields = Object.fromEntries(order.map((n) => [n, true]));
+    }
+
     get selectedCount() {
-        return Object.keys(this.state.selectedFields).length;
+        return this.state.selectedOrder.length;
     }
 
     get selectedFieldList() {
-        return Object.keys(this.state.selectedFields);
+        return this.state.selectedOrder;
+    }
+
+    get selectedColumns() {
+        const labels = {};
+        for (const group of this.state.fieldGroups) {
+            for (const field of group.fields || []) {
+                labels[field.name] = field.label;
+            }
+        }
+        return this.state.selectedOrder.map((name) => ({
+            name,
+            label: labels[name] || name,
+        }));
     }
 
     isFieldSelected(name) {
@@ -320,12 +348,62 @@ export class KaisightReportBuilderAction extends Component {
 
     toggleField(name) {
         if (this.state.selectedFields[name]) {
-            const next = { ...this.state.selectedFields };
-            delete next[name];
-            this.state.selectedFields = next;
+            this.applySelection(this.state.selectedOrder.filter((n) => n !== name));
         } else {
-            this.state.selectedFields = { ...this.state.selectedFields, [name]: true };
+            this.applySelection([...this.state.selectedOrder, name]);
         }
+    }
+
+    removeSelected(name) {
+        this.applySelection(this.state.selectedOrder.filter((n) => n !== name));
+    }
+
+    moveSelected(name, direction) {
+        const order = [...this.state.selectedOrder];
+        const index = order.indexOf(name);
+        const target = index + direction;
+        if (index === -1 || target < 0 || target >= order.length) {
+            return;
+        }
+        [order[index], order[target]] = [order[target], order[index]];
+        this.applySelection(order);
+    }
+
+    onColumnDragStart(name, ev) {
+        this.state.dragFieldName = name;
+        if (ev.dataTransfer) {
+            ev.dataTransfer.effectAllowed = "move";
+            // Firefox requires data to be set for the drag to start.
+            ev.dataTransfer.setData("text/plain", name);
+        }
+    }
+
+    onColumnDragOver(ev) {
+        ev.preventDefault();
+        if (ev.dataTransfer) {
+            ev.dataTransfer.dropEffect = "move";
+        }
+    }
+
+    onColumnDrop(targetName, ev) {
+        ev.preventDefault();
+        const dragged = this.state.dragFieldName;
+        this.state.dragFieldName = null;
+        if (!dragged || dragged === targetName) {
+            return;
+        }
+        const order = this.state.selectedOrder.filter((n) => n !== dragged);
+        const targetIndex = order.indexOf(targetName);
+        if (targetIndex === -1) {
+            order.push(dragged);
+        } else {
+            order.splice(targetIndex, 0, dragged);
+        }
+        this.applySelection(order);
+    }
+
+    onColumnDragEnd() {
+        this.state.dragFieldName = null;
     }
 
     toggleShowAllFields() {
@@ -338,36 +416,31 @@ export class KaisightReportBuilderAction extends Component {
     selectRecommended() {
         const curated = this.state.curatedFields || [];
         if (curated.length) {
-            this.state.selectedFields = Object.fromEntries(
-                curated.map((field) => [field.name, true])
-            );
+            this.applySelection(curated.map((field) => field.name));
             this.state.showAllFields = false;
             this.state.fieldSearch = "";
             return;
         }
         const defaults = this.state.selectedSource?.default_fields || [];
         if (defaults.length) {
-            this.state.selectedFields = Object.fromEntries(defaults.map((n) => [n, true]));
+            this.applySelection(defaults);
         } else {
             this.selectAllVisible();
         }
     }
 
     selectAllVisible() {
-        const names = [];
+        const names = [...this.state.selectedOrder];
         for (const group of this.filteredGroups) {
             for (const field of group.fields) {
                 names.push(field.name);
             }
         }
-        this.state.selectedFields = {
-            ...this.state.selectedFields,
-            ...Object.fromEntries(names.map((n) => [n, true])),
-        };
+        this.applySelection(names);
     }
 
     clearSelection() {
-        this.state.selectedFields = {};
+        this.applySelection([]);
     }
 
     toggleFiltersPanel() {

@@ -258,6 +258,51 @@
                             </button>
                         </div>
 
+                        <div class="kv-report-builder__selected" t-if="selectedCount">
+                            <div class="kv-report-builder__selected-header">
+                                <div>
+                                    <h2 class="kv-report-builder__section-title mb-1">4. Column order</h2>
+                                    <span class="text-muted small">
+                                        Drag, or use the arrows, to set the order in previews, saved reports, and exports.
+                                    </span>
+                                </div>
+                            </div>
+                            <ul class="kv-selected-columns">
+                                <t t-foreach="selectedColumns" t-as="col" t-key="col.name">
+                                    <li class="kv-selected-column"
+                                        t-att-class="{'kv-selected-column--dragging': state.dragFieldName === col.name}"
+                                        draggable="true"
+                                        t-on-dragstart="(ev) => this.onColumnDragStart(col.name, ev)"
+                                        t-on-dragover="onColumnDragOver"
+                                        t-on-drop="(ev) => this.onColumnDrop(col.name, ev)"
+                                        t-on-dragend="onColumnDragEnd">
+                                        <i class="fa fa-bars kv-selected-column__grip" title="Drag to reorder"/>
+                                        <span class="kv-selected-column__index" t-esc="col_index + 1"/>
+                                        <span class="kv-selected-column__label" t-esc="col.label"/>
+                                        <span class="kv-selected-column__actions">
+                                            <button type="button" class="btn btn-link btn-sm p-0"
+                                                title="Move up"
+                                                t-att-disabled="col_first"
+                                                t-on-click="() => this.moveSelected(col.name, -1)">
+                                                <i class="fa fa-arrow-up"/>
+                                            </button>
+                                            <button type="button" class="btn btn-link btn-sm p-0"
+                                                title="Move down"
+                                                t-att-disabled="col_last"
+                                                t-on-click="() => this.moveSelected(col.name, 1)">
+                                                <i class="fa fa-arrow-down"/>
+                                            </button>
+                                            <button type="button" class="btn btn-link btn-sm p-0 text-danger"
+                                                title="Remove column"
+                                                t-on-click="() => this.removeSelected(col.name)">
+                                                <i class="fa fa-times"/>
+                                            </button>
+                                        </span>
+                                    </li>
+                                </t>
+                            </ul>
+                        </div>
+
                         <footer class="kv-report-builder__footer">
                             <button type="button" class="btn btn-secondary" t-on-click="openInOdoo" t-att-disabled="state.exporting">
                                 <i class="fa fa-external-link me-1"/>Preview in Odoo
