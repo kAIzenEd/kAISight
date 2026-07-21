@@ -266,6 +266,15 @@
                                         Drag, or use the arrows, to set the order in previews, saved reports, and exports.
                                     </span>
                                 </div>
+                                <button type="button" class="btn btn-outline-secondary btn-sm"
+                                    t-if="state.canManageSources"
+                                    t-att-disabled="state.savingCommonSet"
+                                    title="Replace this data source's default common columns with the current selection"
+                                    t-on-click="saveCommonSet">
+                                    <i class="fa fa-bookmark-o me-1"/>
+                                    <t t-if="state.savingCommonSet">Saving…</t>
+                                    <t t-else="">Save selection as common set</t>
+                                </button>
                             </div>
                             <ul class="kv-selected-columns">
                                 <t t-foreach="selectedColumns" t-as="col" t-key="col.name">

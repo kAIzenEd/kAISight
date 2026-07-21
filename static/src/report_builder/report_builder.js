@@ -135,6 +135,7 @@ export class KaisightReportBuilderAction extends Component {
             filterCatalog: [],
             selectedFields: {},
             selectedOrder: [],
+            savingCommonSet: false,
             dragFieldName: null,
             fieldSearch: "",
             quickFilters: {},
@@ -404,6 +405,45 @@ export class KaisightReportBuilderAction extends Component {
 
     onColumnDragEnd() {
         this.state.dragFieldName = null;
+    }
+
+    async saveCommonSet() {
+        if (!this.state.canManageSources || !this.state.selectedSource) {
+            return;
+        }
+        if (!this.selectedCount) {
+            this.notification.add(_t("Select at least one column first."), {
+                type: "warning",
+            });
+            return;
+        }
+        this.state.savingCommonSet = true;
+        try {
+            const result = await this.orm.call(
+                "kai.view.report.builder",
+                "set_source_default_fields",
+                [this.state.selectedSource.id, this.selectedFieldList]
+            );
+            const defaults = result?.default_fields || this.selectedFieldList;
+            this.state.selectedSource.default_fields = defaults;
+            const byName = {};
+            for (const group of this.state.fieldGroups) {
+                for (const field of group.fields || []) {
+                    byName[field.name] = field;
+                }
+            }
+            this.state.curatedFields = defaults.map((name) => byName[name]).filter(Boolean);
+            this.notification.add(_t("Common columns saved as the default."), {
+                type: "success",
+            });
+        } catch (error) {
+            this.notification.add(
+                error.message || _t("Could not save the common columns."),
+                { type: "danger" }
+            );
+        } finally {
+            this.state.savingCommonSet = false;
+        }
     }
 
     toggleShowAllFields() {
