@@ -131,6 +131,7 @@ export class KaisightReportBuilderAction extends Component {
             fieldGroups: [],
             curatedFields: [],
             showAllFields: false,
+            collapsedFieldGroups: {},
             filterCatalog: [],
             selectedFields: {},
             fieldSearch: "",
@@ -200,6 +201,7 @@ export class KaisightReportBuilderAction extends Component {
         this.state.domain = "[]";
         this.state.quickFilters = {};
         this.state.recordCount = null;
+        this.state.collapsedFieldGroups = {};
         try {
             const catalog = await this.orm.call(
                 "kai.view.report.builder",
@@ -292,6 +294,28 @@ export class KaisightReportBuilderAction extends Component {
 
     isFieldSelected(name) {
         return !!this.state.selectedFields[name];
+    }
+
+    isFieldGroupCollapsed(groupId) {
+        // Search results should always be visible, regardless of the saved group state.
+        return !this.state.fieldSearch && !!this.state.collapsedFieldGroups[groupId];
+    }
+
+    toggleFieldGroup(groupId) {
+        this.state.collapsedFieldGroups = {
+            ...this.state.collapsedFieldGroups,
+            [groupId]: !this.state.collapsedFieldGroups[groupId],
+        };
+    }
+
+    expandAllFieldGroups() {
+        this.state.collapsedFieldGroups = {};
+    }
+
+    collapseAllFieldGroups() {
+        this.state.collapsedFieldGroups = Object.fromEntries(
+            this.filteredGroups.map((group) => [group.id, true])
+        );
     }
 
     toggleField(name) {

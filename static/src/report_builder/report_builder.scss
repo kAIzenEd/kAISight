@@ -201,23 +201,60 @@
 
     .kv-field-group {
         margin-bottom: 1.25rem;
+        border: 1px solid #e9ecef;
+        border-radius: 0.5rem;
+        overflow: hidden;
 
         &:last-child {
             margin-bottom: 0;
+        }
+
+        &--collapsed {
+            margin-bottom: 0.6rem;
+        }
+    }
+
+    .kv-field-group__header {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.65rem 0.8rem;
+        border: 0;
+        background: #f8f9fa;
+        color: #495057;
+        text-align: left;
+        cursor: pointer;
+
+        &:hover {
+            background: #f1f3f5;
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--o-brand-odoo, #714b67);
+            outline-offset: -2px;
         }
     }
 
     .kv-field-group__title {
         font-size: 0.9rem;
         font-weight: 600;
-        margin-bottom: 0.65rem;
-        color: #495057;
+    }
+
+    .kv-field-group__summary {
+        flex: 0 0 auto;
+        font-size: 0.75rem;
+        font-weight: 400;
+        color: #6c757d;
     }
 
     .kv-field-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
         gap: 0.5rem;
+        padding: 0.65rem;
+        border-top: 1px solid #e9ecef;
     }
 
     .kv-field-check {
